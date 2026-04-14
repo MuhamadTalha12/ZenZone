@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.ZenZone" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/zen_teal_primary</item>
+        <item name="colorPrimaryVariant">@color/zen_teal_dark</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/zen_blue_muted</item>
+        <item name="colorSecondaryVariant">@color/zen_blue_muted</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/black</item>
+
+        <item name="android:windowBackground">@color/zen_slate_dark</item>
+        <item name="colorSurface">@color/zen_slate_dark</item>
+        <item name="colorError">@color/zen_danger_red</item>
+        <item name="fontFamily">@font/poppins_font_family</item>
+    </style>
+</resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/zen_teal_primary"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingHorizontal="40dp"
+    android:paddingTop="80dp"
+    android:paddingBottom="16dp">
+
+    <ImageView
+        android:id="@+id/iv_onboarding_img"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:src="@drawable/ic_lotus_logo"
+        android:alpha="0.95" />
+
+    <TextView
+        android:id="@+id/tv_onboarding_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/poppins_font_family"
+        android:gravity="center"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_onboarding_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/poppins_font_family"
+        android:gravity="center"
+        android:alpha="0.8"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="16sp" />
+
+</LinearLayout>
