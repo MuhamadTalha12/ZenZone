@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.zenzone.app.model.UserProfile
 import com.zenzone.app.model.ZenBadge
+import com.zenzone.app.repository.FocusRepository
 import com.zenzone.app.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import kotlinx.coroutines.withContext
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
     private val userRepo = UserRepository(application)
+    private val focusRepo = FocusRepository(application)
 
     private val _profile = MutableLiveData<UserProfile>()
     val profile: LiveData<UserProfile> = _profile
@@ -21,24 +23,82 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _badges = MutableLiveData<List<ZenBadge>>()
     val badges: LiveData<List<ZenBadge>> = _badges
 
+    private val _totalStreak = MutableLiveData<Int>(0)
+    val totalStreak: LiveData<Int> = _totalStreak
+    
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+    
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
     fun loadProfile() {
         viewModelScope.launch {
-            val curProfile = userRepo.loadProfile()
-            
-            val allBadges = listOf(
-                ZenBadge("first_session", "First Breath", "Complete your very first focus session.", "ic_badge_first_breath", 0, curProfile.badges.contains("first_session")),
-                ZenBadge("chain_3", "Novice Monk", "Reach a 3-day chain.", "ic_badge_chain", 3, curProfile.badges.contains("chain_3")),
-                ZenBadge("chain_7", "Week Warrior", "Reach a 7-day chain.", "ic_badge_chain", 7, curProfile.badges.contains("chain_7")),
-                ZenBadge("chain_14", "Zen Apprentice", "Reach a 14-day chain.", "ic_badge_chain", 14, curProfile.badges.contains("chain_14")),
-                ZenBadge("chain_30", "Digital Monk", "Reach a 30-day chain.", "ic_badge_master", 30, curProfile.badges.contains("chain_30")),
-                ZenBadge("chain_60", "Focus Master", "Reach a 60-day chain.", "ic_badge_master", 60, curProfile.badges.contains("chain_60")),
-                ZenBadge("chain_100", "Digital Ninja", "Reach a 100-day chain.", "ic_badge_master", 100, curProfile.badges.contains("chain_100")),
-                ZenBadge("hours_10", "Time Bender", "Accumulate 10 hours of total focus time.", "ic_badge_time", 0, curProfile.badges.contains("hours_10"))
-            )
+            try {
+                _isLoading.value = true
+                val curProfile = userRepo.loadProfile()
+                val goals = focusRepo.loadGoals()
+                
+                val allBadges = com.zenzone.app.utils.BadgeManager.getAllBadges(curProfile)
+                
+                // Calculate total streak from all goals
+                val sumStreak = goals.sumOf { it.currentChain }
+                
+                // Update profile with current chain from goals
+                val updatedProfile = curProfile.copy(currentChain = sumStreak)
 
-            withContext(Dispatchers.Main) {
-                _profile.value = curProfile
-                _badges.value = allBadges
+                withContext(Dispatchers.Main) {
+                    _profile.value = updatedProfile
+                    _badges.value = allBadges
+                    _totalStreak.value = sumStreak
+                    _isLoading.value = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Failed to load profile: ${e.message}"
+                    _isLoading.value = false
+                    // Set default values to prevent crashes
+                    if (_profile.value == null) {
+                        _profile.value = UserProfile(
+                            userName = "",
+                            totalFocusedMinutes = 0,
+                            zenLevel = 1,
+                            zenXP = 0,
+                            badges = emptyList(),
+                            totalSessions = 0,
+                            longestEverChain = 0,
+                            currentChain = 0
+                        )
+                    }
+                    if (_badges.value == null) {
+                        _badges.value = emptyList()
+                    }
+                }
+            }
+        }
+    }
+    
+    fun clearErrorMessage() {
+        _errorMessage.value = null
+    }
+    
+    fun updateProfile(name: String, imageUri: String?) {
+        viewModelScope.launch {
+            try {
+                val currentProfile = _profile.value ?: return@launch
+                val updatedProfile = currentProfile.copy(
+                    userName = name,
+                    profileImageUri = imageUri
+                )
+                userRepo.saveProfile(updatedProfile)
+                withContext(Dispatchers.Main) {
+                    _profile.value = updatedProfile
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Failed to update profile: ${e.message}"
+                }
             }
         }
     }

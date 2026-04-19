@@ -39,13 +39,13 @@ object ChainCalculator {
     }
 
     fun calculateXPGain(sessionMinutes: Int, chainLength: Int): Int {
-        val baseXP = sessionMinutes * 2
-        val chainBonus = minOf(chainLength * 5, 100)
+        val baseXP = sessionMinutes * Constants.XP_PER_MINUTE
+        val chainBonus = minOf(chainLength * Constants.CHAIN_BONUS_XP_PER_DAY, Constants.MAX_CHAIN_BONUS_XP)
         return baseXP + chainBonus
     }
 
     fun calculateZenLevel(totalXP: Int): Pair<Int, Int> {
-        val thresholds = listOf(100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000, 15000)
+        val thresholds = Constants.ZEN_LEVEL_THRESHOLDS
         var level = 1
         var currentLevelStartXP = 0
 
@@ -58,6 +58,6 @@ object ChainCalculator {
             }
         }
         val xpIntoLevel = totalXP - currentLevelStartXP
-        return Pair(minOf(level, 10), xpIntoLevel)
+        return Pair(minOf(level, Constants.MAX_ZEN_LEVEL), xpIntoLevel)
     }
 }

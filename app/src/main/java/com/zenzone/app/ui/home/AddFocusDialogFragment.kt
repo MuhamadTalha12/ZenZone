@@ -59,15 +59,37 @@ class AddFocusDialogFragment(private val onAdd: (FocusGoal) -> Unit) : BottomShe
                 view.findViewById<RadioButton>(checkedColorId).tag?.toString() ?: "#2A9D8F"
             } else "#2A9D8F"
 
-            if (name.isEmpty() || minsStr.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+            // Validation
+            if (name.isBlank()) {
+                Toast.makeText(requireContext(), "Goal name cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            if (name.length > com.zenzone.app.utils.Constants.MAX_GOAL_NAME_LENGTH) {
+                Toast.makeText(requireContext(), "Goal name cannot exceed ${com.zenzone.app.utils.Constants.MAX_GOAL_NAME_LENGTH} characters", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            if (minsStr.isBlank()) {
+                Toast.makeText(requireContext(), "Target minutes cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            val targetMinutes = minsStr.toIntOrNull()
+            if (targetMinutes == null || targetMinutes <= 0) {
+                Toast.makeText(requireContext(), "Target minutes must be a positive number", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            if (targetMinutes > com.zenzone.app.utils.Constants.MAX_TARGET_MINUTES) {
+                Toast.makeText(requireContext(), "Target minutes cannot exceed ${com.zenzone.app.utils.Constants.MAX_TARGET_MINUTES} minutes", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val goal = FocusGoal(
                 id = UUID.randomUUID().toString(),
                 name = name,
-                targetMinutes = minsStr.toIntOrNull() ?: 25,
+                targetMinutes = targetMinutes,
                 frequency = freq,
                 currentChain = 0,
                 longestChain = 0,

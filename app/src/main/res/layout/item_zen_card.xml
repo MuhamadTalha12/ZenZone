@@ -86,13 +86,29 @@
             <!-- Goal Details -->
             <TextView
                 android:id="@+id/tv_goal_details"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/poppins_font_family"
                 android:textColor="@color/zen_gray_text"
                 android:textSize="13sp"
+                app:layout_constraintEnd_toStartOf="@id/btn_edit_goal"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_goal_name" />
+
+            <!-- Edit Button -->
+            <ImageButton
+                android:id="@+id/btn_edit_goal"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_edit"
+                app:tint="@color/zen_teal_primary"
+                android:contentDescription="Edit Goal"
+                app:layout_constraintBottom_toBottomOf="@id/tv_goal_details"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_goal_details" />
 
             <!-- Progress Bar -->
             <ProgressBar

@@ -47,65 +47,97 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = ContextCompat.getColor(this, R.color.zen_teal_dark)
-        setContentView(R.layout.activity_main)
+        try {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.zen_teal_dark)
+            setContentView(R.layout.activity_main)
 
-        bottomNav = findViewById(R.id.bottom_nav)
-        layoutOnboarding = findViewById(R.id.layout_onboarding)
-        vpOnboarding = layoutOnboarding.findViewById(R.id.vp_onboarding)
-        btnGetStarted = layoutOnboarding.findViewById(R.id.btn_get_started)
-        tilNameInput = layoutOnboarding.findViewById(R.id.til_name_input)
-        etUserName = layoutOnboarding.findViewById(R.id.et_user_name)
-        llDots = layoutOnboarding.findViewById(R.id.ll_dots)
+            bottomNav = findViewById(R.id.bottom_nav)
+            layoutOnboarding = findViewById(R.id.layout_onboarding)
+            vpOnboarding = layoutOnboarding.findViewById(R.id.vp_onboarding)
+            btnGetStarted = layoutOnboarding.findViewById(R.id.btn_get_started)
+            tilNameInput = layoutOnboarding.findViewById(R.id.til_name_input)
+            etUserName = layoutOnboarding.findViewById(R.id.et_user_name)
+            llDots = layoutOnboarding.findViewById(R.id.ll_dots)
 
-        val prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
-        val isOnboardingComplete = prefs.getBoolean(Constants.PREF_ONBOARDING_COMPLETE, false)
+            val prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+            val isOnboardingComplete = prefs.getBoolean(Constants.PREF_ONBOARDING_COMPLETE, false)
 
-        if (!isOnboardingComplete) {
-            showOnboarding()
-        } else {
-            setupNavigation()
+            if (!isOnboardingComplete) {
+                showOnboarding()
+            } else {
+                if (savedInstanceState == null) {
+                    setupNavigation()
+                } else {
+                    bottomNav.visibility = View.VISIBLE
+                    setupNavigationListeners()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (savedInstanceState == null) {
+                setupNavigation()
+            }
         }
     }
 
     private fun showOnboarding() {
-        layoutOnboarding.visibility = View.VISIBLE
-        setupDots(0)
+        try {
+            layoutOnboarding.visibility = View.VISIBLE
+            setupDots(0)
 
-        val adapter = OnboardingAdapter(slides)
-        vpOnboarding.adapter = adapter
+            val adapter = OnboardingAdapter(slides)
+            vpOnboarding.adapter = adapter
 
-        vpOnboarding.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updateDots(position)
-                val isLastSlide = position == slides.size - 1
-                tilNameInput.isVisible = isLastSlide
-                btnGetStarted.isVisible = isLastSlide
+            vpOnboarding.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    try {
+                        updateDots(position)
+                        val isLastSlide = position == slides.size - 1
+                        tilNameInput.isVisible = isLastSlide
+                        btnGetStarted.isVisible = isLastSlide
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            })
+
+            btnGetStarted.setOnClickListener {
+                try {
+                    val name = etUserName.text?.toString()?.trim() ?: ""
+                    if (name.isBlank()) {
+                        tilNameInput.error = "Please enter your name"
+                        return@setOnClickListener
+                    }
+                    if (name.length > Constants.MAX_USER_NAME_LENGTH) {
+                        tilNameInput.error = "Name cannot exceed ${Constants.MAX_USER_NAME_LENGTH} characters"
+                        return@setOnClickListener
+                    }
+                    tilNameInput.error = null
+
+                    val prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+                    prefs.edit()
+                        .putBoolean(Constants.PREF_ONBOARDING_COMPLETE, true)
+                        .putString(Constants.PREF_USER_NAME, name)
+                        .apply()
+
+                    lifecycleScope.launch {
+                        try {
+                            val repo = UserRepository(this@MainActivity)
+                            val existing = repo.loadProfile()
+                            repo.saveProfile(existing.copy(userName = name))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    layoutOnboarding.visibility = View.GONE
+                    setupNavigation()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
-        })
-
-        btnGetStarted.setOnClickListener {
-            val name = etUserName.text?.toString()?.trim() ?: ""
-            if (name.isEmpty()) {
-                tilNameInput.error = "Please enter your name"
-                return@setOnClickListener
-            }
-            tilNameInput.error = null
-
-            val prefs = getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
-            prefs.edit()
-                .putBoolean(Constants.PREF_ONBOARDING_COMPLETE, true)
-                .putString(Constants.PREF_USER_NAME, name)
-                .apply()
-
-            // Save name into profile
-            lifecycleScope.launch {
-                val repo = UserRepository(this@MainActivity)
-                val existing = repo.loadProfile()
-                repo.saveProfile(existing.copy(userName = name))
-            }
-
-            layoutOnboarding.visibility = View.GONE
+        } catch (e: Exception) {
+            e.printStackTrace()
             setupNavigation()
         }
     }
@@ -131,22 +163,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupNavigation() {
-        bottomNav.visibility = View.VISIBLE
+    private fun setupNavigationListeners() {
         bottomNav.setOnItemSelectedListener { item ->
-            val fragment: Fragment = when (item.itemId) {
-                R.id.nav_home -> HomeFragment()
-                R.id.nav_focus -> FocusFragment()
-                R.id.nav_stats -> StatsFragment()
-                R.id.nav_profile -> ProfileFragment()
-                else -> HomeFragment()
+            try {
+                val fragment: Fragment = when (item.itemId) {
+                    R.id.nav_home -> HomeFragment()
+                    R.id.nav_focus -> FocusFragment()
+                    R.id.nav_stats -> StatsFragment()
+                    R.id.nav_profile -> ProfileFragment()
+                    else -> HomeFragment()
+                }
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, fragment)
+                    .commit()
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
             }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment, fragment)
-                .commit()
-            true
         }
-        bottomNav.selectedItemId = R.id.nav_home
+    }
+
+    private fun setupNavigation() {
+        try {
+            bottomNav.visibility = View.VISIBLE
+            setupNavigationListeners()
+            bottomNav.selectedItemId = R.id.nav_home
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
     
     fun enableFocusLock() {
@@ -163,7 +208,6 @@ class MainActivity : AppCompatActivity() {
     
     override fun onBackPressed() {
         if (isFocusLockActive) {
-            // Prevent back button during focus session
             android.widget.Toast.makeText(this, "Focus session in progress. Stop the timer to exit.", android.widget.Toast.LENGTH_SHORT).show()
         } else {
             super.onBackPressed()

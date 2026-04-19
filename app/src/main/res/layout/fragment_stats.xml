@@ -5,205 +5,156 @@
     android:layout_height="match_parent"
     android:background="@color/zen_slate_bg">
 
-    <!-- Header with gradient -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/zen_teal_primary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_font_family"
-                android:text="Your Progress"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:alpha="0.8"
-                android:fontFamily="@font/poppins_font_family"
-                android:text="Track your focus journey"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="16dp"
             android:paddingBottom="80dp">
 
-            <!-- Summary Cards -->
+            <!-- Common Navigation Bar -->
+            <include layout="@layout/layout_common_navbar" />
+
+            <!-- Weekly Insights Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="3">
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@color/zen_slate_surface"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp">
+                    android:text="WEEKLY INSIGHTS"
+                    android:textColor="@color/zen_gray_text"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="8dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="📊"
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/tv_total_sessions"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:textColor="@color/zen_teal_primary"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:text="Sessions"
-                            android:textColor="@color/zen_gray_text"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tv_weekly_hours"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="6dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@color/zen_slate_surface"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp">
+                    android:text="12.4"
+                    android:textColor="@color/zen_teal_primary"
+                    android:textSize="48sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:layout_marginBottom="4dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="⏱️"
-                            android:textSize="24sp" />
-
-                        <TextView
-                            android:id="@+id/tv_total_hours"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:textColor="@color/zen_blue_muted"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:text="Hours"
-                            android:textColor="@color/zen_gray_text"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="@color/zen_slate_surface"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp">
+                    android:text="hrs"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:layout_marginTop="-12dp"
+                    android:layout_marginBottom="12dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                <TextView
+                    android:id="@+id/tv_weekly_summary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="You've reached 85% of your weekly focus target. Your peak focus was on Tuesday."
+                    android:textColor="@color/zen_gray_text"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:lineSpacingExtra="4dp"
+                    android:layout_marginBottom="20dp" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🔥"
-                            android:textSize="24sp" />
+                <!-- Weekly Bar Chart -->
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/bar_chart_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginBottom="8dp" />
 
-                        <TextView
-                            android:id="@+id/tv_best_chain"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:textColor="@color/zen_accent_gold"
-                            android:textSize="28sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/poppins_font_family"
-                            android:text="Best Chain"
-                            android:textColor="@color/zen_gray_text"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Weekly Chart Card -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Milestone Progress Card -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="20dp"
                 app:cardBackgroundColor="@color/zen_slate_surface"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Milestone Progress"
+                            android:textColor="@color/zen_slate_dark"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_font_family" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/btn_milestone_info"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground"
+                            app:cardBackgroundColor="@color/zen_teal_light"
+                            app:cardElevation="0dp"
+                            app:cardCornerRadius="20dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_info"
+                                app:tint="@color/zen_teal_primary" />
+
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_milestone_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You're just 2.6 hours away from the &quot;Deep Diver&quot; badge."
+                        android:textColor="@color/zen_gray_text"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:lineSpacingExtra="2dp"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Progress Bar -->
+                    <ProgressBar
+                        android:id="@+id/progress_milestone"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:progress="75"
+                        android:progressDrawable="@drawable/custom_progress_bar"
+                        android:layout_marginBottom="12dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -211,62 +162,117 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/tv_lvl_start"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:text="LVL 1: NOVICE MONK"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
                             android:fontFamily="@font/poppins_font_family"
-                            android:text="This Week"
-                            android:textColor="@color/zen_slate_dark"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:letterSpacing="0.05" />
 
                         <TextView
+                            android:id="@+id/tv_lvl_end"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="LVL 2: CALM KEEPER"
+                            android:textColor="@color/zen_slate_dark"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
                             android:fontFamily="@font/poppins_font_family"
-                            android:text="Last 7 Days"
-                            android:textColor="@color/zen_gray_text"
-                            android:textSize="12sp" />
+                            android:letterSpacing="0.05" />
+
                     </LinearLayout>
 
-                    <com.zenzone.app.ui.stats.BarChartView
-                        android:id="@+id/bar_chart_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:layout_marginTop="12dp" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Day Streak Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="#E0F2F1"
+                app:cardElevation="0dp"
+                app:cardCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_badge_chain"
+                        app:tint="@color/zen_teal_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tv_current_streak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12"
+                        android:textColor="@color/zen_slate_dark"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DAY STREAK"
+                        android:textColor="@color/zen_gray_text"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:letterSpacing="0.08" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <!-- Session History Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal">
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/poppins_font_family"
                     android:text="Session History"
                     android:textColor="@color/zen_slate_dark"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_font_family" />
 
                 <TextView
-                    android:id="@+id/tv_history_count"
+                    android:id="@+id/btn_view_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/zen_teal_light"
-                    android:fontFamily="@font/poppins_font_family"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
-                    android:text="0"
-                    android:textColor="@color/zen_teal_dark"
+                    android:text="VIEW ALL"
+                    android:textColor="@color/zen_teal_primary"
                     android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:letterSpacing="0.05"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="8dp" />
+
             </LinearLayout>
 
             <!-- Session History List -->
@@ -274,6 +280,7 @@
                 android:id="@+id/rv_session_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="24dp"
                 android:nestedScrollingEnabled="false" />
 
             <!-- Empty State -->
@@ -284,7 +291,8 @@
                 android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:paddingHorizontal="24dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -302,17 +310,34 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/poppins_font_family"
-                    android:text="Complete your first focus session to see stats"
-                    android:textColor="@color/zen_gray_text"
-                    android:textSize="13sp" />
             </LinearLayout>
 
+            <!-- Inspirational Quote -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="32dp"
+                android:layout_marginHorizontal="32dp"
+                android:text="Focus is not the absence of thought, but the gentle return to center."
+                android:textColor="@color/zen_gray_text"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins_font_family"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp" />
+
+            <!-- Loading Indicator -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:visibility="gone" />
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

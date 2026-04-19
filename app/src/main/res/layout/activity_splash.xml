@@ -10,6 +10,7 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:src="@drawable/ic_lotus_logo"
+        android:contentDescription="@string/app_logo"
         app:layout_constraintBottom_toTopOf="@id/tv_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

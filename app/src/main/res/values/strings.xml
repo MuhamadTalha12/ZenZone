@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ZenZone</string>
+    
+    <!-- Content Descriptions for Accessibility -->
+    <string name="app_logo">ZenZone application logo</string>
+    <string name="onboarding_illustration">Onboarding illustration</string>
+    <string name="badge_icon">Achievement badge icon</string>
+    <string name="locked_badge">Locked badge indicator</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="profile_picture_preview">Profile picture preview</string>
 </resources>

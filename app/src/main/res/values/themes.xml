@@ -19,4 +19,23 @@
         <item name="android:windowBackground">@color/zen_teal_primary</item>
         <item name="android:statusBarColor">@color/zen_teal_dark</item>
     </style>
+
+    <style name="ZenDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="materialAlertDialogTitleTextStyle">@style/ZenDialogTitle</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/ZenDialogBody</item>
+        <item name="colorPrimary">@color/zen_teal_primary</item>
+        <item name="colorSurface">@color/zen_slate_surface</item>
+        <item name="android:textColorPrimary">@color/zen_slate_dark</item>
+    </style>
+
+    <style name="ZenDialogTitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/zen_teal_primary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/poppins_font_family</item>
+    </style>
+
+    <style name="ZenDialogBody" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/zen_slate_dark</item>
+        <item name="fontFamily">@font/poppins_font_family</item>
+    </style>
 </resources>

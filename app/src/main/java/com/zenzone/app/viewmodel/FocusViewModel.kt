@@ -12,6 +12,7 @@ import com.zenzone.app.model.ZenBadge
 import com.zenzone.app.repository.FocusRepository
 import com.zenzone.app.repository.UserRepository
 import com.zenzone.app.utils.ChainCalculator
+import com.zenzone.app.utils.Constants
 import com.zenzone.app.utils.DateUtils
 import com.zenzone.app.utils.DndHelper
 import kotlinx.coroutines.Dispatchers
@@ -46,13 +47,28 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
     private val _focusEvents = MutableLiveData<FocusEvent?>()
     val focusEvents: LiveData<FocusEvent?> = _focusEvents
     
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+    
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+    
     private var timer: CountDownTimer? = null
     
     fun loadGoals() {
         viewModelScope.launch {
-            val list = focusRepo.loadGoals()
-            withContext(Dispatchers.Main) {
-                _goals.value = list
+            try {
+                _isLoading.value = true
+                val list = focusRepo.loadGoals()
+                withContext(Dispatchers.Main) {
+                    _goals.value = list
+                    _isLoading.value = false
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Failed to load goals: ${e.message}"
+                    _isLoading.value = false
+                }
             }
         }
     }
@@ -74,7 +90,7 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
 
         val totalMs = _remainingTimeMs.value ?: (goal.targetMinutes * 60 * 1000L)
         
-        timer = object : CountDownTimer(totalMs, 1000) {
+        timer = object : CountDownTimer(totalMs, Constants.TIMER_TICK_INTERVAL_MS) {
             override fun onTick(millisUntilFinished: Long) {
                 _remainingTimeMs.value = millisUntilFinished
             }
@@ -109,70 +125,68 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logSession(goal: FocusGoal, minutesFocused: Int) {
         viewModelScope.launch {
-            val today = DateUtils.getTodayString()
-            val oldChain = goal.currentChain
-            val updatedGoal = ChainCalculator.applyChainResult(goal, minutesFocused, today)
-            
-            // Save goal
-            val allGoals = focusRepo.loadGoals().toMutableList()
-            val idx = allGoals.indexOfFirst { it.id == goal.id }
-            if (idx != -1) allGoals[idx] = updatedGoal
-            focusRepo.saveGoals(allGoals)
+            try {
+                val today = DateUtils.getTodayString()
+                val oldChain = goal.currentChain
+                val updatedGoal = ChainCalculator.applyChainResult(goal, minutesFocused, today)
+                
+                // Save goal
+                val allGoals = focusRepo.loadGoals().toMutableList()
+                val idx = allGoals.indexOfFirst { it.id == goal.id }
+                if (idx != -1) allGoals[idx] = updatedGoal
+                focusRepo.saveGoals(allGoals)
 
-            // Save Session
-            val session = FocusSession(
-                id = UUID.randomUUID().toString(),
-                goalId = goal.id,
-                goalName = goal.name,
-                durationMinutes = minutesFocused,
-                completedAt = DateUtils.getIsoTimestamp(),
-                wasChainSaved = updatedGoal.currentChain > oldChain
-            )
-            focusRepo.saveSession(session)
+                // Save Session
+                val session = FocusSession(
+                    id = UUID.randomUUID().toString(),
+                    goalId = goal.id,
+                    goalName = goal.name,
+                    durationMinutes = minutesFocused,
+                    completedAt = DateUtils.getIsoTimestamp(),
+                    wasChainSaved = updatedGoal.currentChain > oldChain
+                )
+                focusRepo.saveSession(session)
 
-            // Update profile
-            val profile = userRepo.loadProfile()
-            val xpGain = ChainCalculator.calculateXPGain(minutesFocused, updatedGoal.currentChain)
-            val newLifetimeXp = profile.zenXP + xpGain
-            val (newLevel, _) = ChainCalculator.calculateZenLevel(newLifetimeXp)
-            
-            val newTotalMs = profile.totalFocusedMinutes + minutesFocused
-            val newTotalSess = profile.totalSessions + 1
-            val newLongestEver = maxOf(profile.longestEverChain, updatedGoal.currentChain)
+                // Update profile
+                val profile = userRepo.loadProfile()
+                val xpGain = ChainCalculator.calculateXPGain(minutesFocused, updatedGoal.currentChain)
+                val newLifetimeXp = profile.zenXP + xpGain
+                val (newLevel, _) = ChainCalculator.calculateZenLevel(newLifetimeXp)
+                
+                val newTotalMs = profile.totalFocusedMinutes + minutesFocused
+                val newTotalSess = profile.totalSessions + 1
+                val newLongestEver = maxOf(profile.longestEverChain, updatedGoal.currentChain)
 
-            val earnedBadges = profile.badges.toMutableList()
-            val newBadgesThisSession = mutableListOf<ZenBadge>()
-            
-            val checkBadge = { id: String, name: String, chainReq: Int, checkVal: Boolean ->
-                if (checkVal && !earnedBadges.contains(id)) {
-                    earnedBadges.add(id)
-                    newBadgesThisSession.add(ZenBadge(id, name, "", "ic_lotus_logo", chainReq, true))
+                val (earnedBadges, newBadgesThisSession) = com.zenzone.app.utils.BadgeManager.checkAndUnlockBadges(
+                    profile.badges,
+                    updatedGoal.currentChain,
+                    newTotalMs,
+                    newTotalSess
+                )
+
+                val updatedProfile = profile.copy(
+                    totalFocusedMinutes = newTotalMs,
+                    zenLevel = newLevel,
+                    zenXP = newLifetimeXp,
+                    badges = earnedBadges,
+                    totalSessions = newTotalSess,
+                    longestEverChain = newLongestEver
+                )
+                userRepo.saveProfile(updatedProfile)
+
+                withContext(Dispatchers.Main) {
+                    _selectedGoal.value = updatedGoal
+                    _focusEvents.value = FocusEvent.SessionComplete(minutesFocused, oldChain, updatedGoal.currentChain, xpGain, newBadgesThisSession)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Failed to log session: ${e.message}"
                 }
             }
-            
-            checkBadge("first_session", "First Breath", 0, newTotalSess == 1)
-            checkBadge("chain_3", "Novice Monk", 3, updatedGoal.currentChain >= 3)
-            checkBadge("chain_7", "Week Warrior", 7, updatedGoal.currentChain >= 7)
-            checkBadge("chain_14", "Zen Apprentice", 14, updatedGoal.currentChain >= 14)
-            checkBadge("chain_30", "Digital Monk", 30, updatedGoal.currentChain >= 30)
-            checkBadge("chain_60", "Focus Master", 60, updatedGoal.currentChain >= 60)
-            checkBadge("chain_100", "Digital Ninja", 100, updatedGoal.currentChain >= 100)
-            checkBadge("hours_10", "Time Bender", 0, newTotalMs >= 600)
-
-            val updatedProfile = profile.copy(
-                totalFocusedMinutes = newTotalMs,
-                zenLevel = newLevel,
-                zenXP = newLifetimeXp,
-                badges = earnedBadges,
-                totalSessions = newTotalSess,
-                longestEverChain = newLongestEver
-            )
-            userRepo.saveProfile(updatedProfile)
-
-            withContext(Dispatchers.Main) {
-                _selectedGoal.value = updatedGoal
-                _focusEvents.value = FocusEvent.SessionComplete(minutesFocused, oldChain, updatedGoal.currentChain, xpGain, newBadgesThisSession)
-            }
         }
+    }
+    
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 }

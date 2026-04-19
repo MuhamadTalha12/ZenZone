@@ -5,26 +5,95 @@
     android:layout_height="match_parent"
     android:background="@color/zen_slate_bg">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
 
-            <!-- Goal Selector Card -->
+            <!-- Common Navigation Bar -->
+            <include layout="@layout/layout_common_navbar" />
+
+            <!-- Active Session Badge -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cv_active_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/zen_teal_light"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:gravity="center">
+
+                    <View
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/ic_focus" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ACTIVE SESSION"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:textColor="@color/zen_teal_dark"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Goal Name Title -->
+            <TextView
+                android:id="@+id/tv_goal_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:text="Select a Goal"
+                android:fontFamily="@font/poppins_font_family"
+                android:textColor="@color/zen_slate_dark"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <!-- Goal Subtitle -->
+            <TextView
+                android:id="@+id/tv_goal_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="Choose your focus goal below"
+                android:fontFamily="@font/poppins_font_family"
+                android:textColor="@color/zen_gray_text"
+                android:textSize="16sp"
+                android:gravity="center" />
+
+            <!-- Goal Selector (Hidden when running) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cv_goal_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:cardBackgroundColor="@color/zen_teal_primary"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/zen_slate_surface"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:layout_constraintTop_toTopOf="parent">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -37,198 +106,220 @@
                         android:layout_height="wrap_content"
                         android:text="Select Focus Goal"
                         android:fontFamily="@font/poppins_font_family"
-                        android:textColor="@color/zen_slate_surface"
-                        android:textSize="12sp"
+                        android:textColor="@color/zen_slate_dark"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp" />
 
-                    <!-- Styled Spinner Container -->
-                    <FrameLayout
+                    <Spinner
+                        android:id="@+id/spinner_goal_selector"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#33FFFFFF"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp">
-
-                        <Spinner
-                            android:id="@+id/spinner_goal_selector"
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:popupBackground="@color/zen_slate_dark"
-                            android:spinnerMode="dropdown" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:id="@+id/tv_goal_info_desc"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:fontFamily="@font/poppins_font_family"
-                        android:text="Target: 25 minutes"
-                        android:textColor="#CCFFFFFF"
-                        android:textSize="13sp" />
+                        android:layout_height="48dp"
+                        android:background="#F0F4F8"
+                        android:popupBackground="@color/zen_slate_surface"
+                        android:spinnerMode="dropdown"
+                        android:paddingHorizontal="12dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Timer View -->
             <com.zenzone.app.ui.focus.CircularTimerView
                 android:id="@+id/timer_view"
-                android:layout_width="280dp"
-                android:layout_height="280dp"
-                android:layout_marginTop="32dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cv_goal_selector" />
+                android:layout_width="320dp"
+                android:layout_height="320dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp" />
 
-            <!-- Control Buttons -->
+            <!-- Complete Session Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_complete"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="40dp"
+                android:backgroundTint="@color/zen_teal_primary"
+                android:fontFamily="@font/poppins_font_family"
+                android:text="Complete Session"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/zen_slate_surface"
+                android:visibility="gone"
+                app:cornerRadius="32dp"
+                app:icon="@drawable/ic_focus"
+                app:iconGravity="end"
+                app:iconPadding="12dp"
+                app:iconTint="@color/zen_slate_surface" />
+
+            <!-- Start Button (shown when not running) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_start"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="40dp"
+                android:backgroundTint="@color/zen_teal_primary"
+                android:fontFamily="@font/poppins_font_family"
+                android:text="Start Focus Session"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/zen_slate_surface"
+                app:cornerRadius="32dp"
+                app:icon="@drawable/ic_focus"
+                app:iconGravity="start"
+                app:iconPadding="12dp"
+                app:iconTint="@color/zen_slate_surface" />
+
+            <!-- Control Buttons (Pause & Cancel) -->
             <LinearLayout
-                android:id="@+id/ll_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/timer_view">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_start"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:backgroundTint="@color/zen_teal_primary"
-                    android:fontFamily="@font/poppins_font_family"
-                    android:text="Start"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="14dp"
-                    app:icon="@drawable/ic_focus"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_stop"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:backgroundTint="@color/zen_danger_red"
-                    android:fontFamily="@font/poppins_font_family"
-                    android:text="Stop"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="14dp" />
-            </LinearLayout>
-
-            <!-- DND Badge -->
-            <TextView
-                android:id="@+id/tv_dnd_badge"
+                android:id="@+id/ll_control_buttons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/zen_teal_dark"
-                android:fontFamily="@font/poppins_font_family"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
-                android:text="🔕 DND Active"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ll_buttons" />
-
-            <!-- Focus Lock Badge -->
-            <TextView
-                android:id="@+id/tv_focus_lock_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@color/zen_danger_red"
-                android:fontFamily="@font/poppins_font_family"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
-                android:text="🔒 Focus Lock Active"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_dnd_badge" />
-
-            <!-- Session Info Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cv_session_goal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="@color/zen_slate_surface"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_focus_lock_badge">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
+                <!-- Pause Button -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:id="@+id/btn_pause_container"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:gravity="center"
+                    android:layout_marginEnd="40dp"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                    <TextView
-                        android:id="@+id/tv_goal_info_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Session Goal: Select a goal"
-                        android:fontFamily="@font/poppins_font_family"
-                        android:textStyle="bold"
-                        android:textColor="@color/zen_slate_dark"
-                        android:textSize="14sp" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        app:cardBackgroundColor="@color/zen_slate_surface"
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="2dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="⏸"
+                            android:textSize="24sp" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:text="PAUSE"
                         android:fontFamily="@font/poppins_font_family"
-                        android:text="💡 Tip: Stay focused and build your chain!"
                         android:textColor="@color/zen_gray_text"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Manual Log Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_log_manual"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
+                <!-- Cancel Button -->
+                <LinearLayout
+                    android:id="@+id/btn_cancel_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        app:cardBackgroundColor="@color/zen_slate_surface"
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="2dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="✕"
+                            android:textSize="24sp"
+                            android:textColor="@color/zen_danger_red" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="CANCEL"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:textColor="@color/zen_gray_text"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Motivational Quote -->
+            <TextView
+                android:id="@+id/tv_quote"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="80dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:layout_marginHorizontal="40dp"
+                android:text="&quot;The secret of getting ahead is getting started.&quot;"
                 android:fontFamily="@font/poppins_font_family"
-                android:text="Log Manual Session"
-                android:textColor="@color/zen_teal_primary"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/zen_teal_primary"
-                app:strokeWidth="2dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cv_session_goal" />
+                android:textColor="@color/zen_gray_text"
+                android:textSize="14sp"
+                android:fontStyle="italic"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+            <!-- DND and Focus Lock Badges -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal">
 
-    <!-- Info FAB -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_info"
+                <TextView
+                    android:id="@+id/tv_dnd_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@color/zen_teal_dark"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="🔕 DND"
+                    android:textColor="@color/zen_slate_surface"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_focus_lock_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/zen_danger_red"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="🔒 Locked"
+                    android:textColor="@color/zen_slate_surface"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="20dp"
-        android:contentDescription="How to earn XP and badges"
-        android:src="@drawable/ic_info"
-        app:backgroundTint="@color/zen_blue_muted"
-        app:borderWidth="0dp"
-        app:elevation="6dp"
-        app:fabSize="normal"
-        app:tint="@color/zen_slate_surface" />
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:indeterminateTint="@color/zen_teal_primary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

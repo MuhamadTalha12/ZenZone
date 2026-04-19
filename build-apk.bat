@@ -1,0 +1,38 @@
+@echo off
+echo ========================================
+echo ZenZone APK Builder
+echo ========================================
+echo.
+
+echo Cleaning previous builds...
+call gradlew clean
+echo.
+
+echo Building Debug APK...
+call gradlew assembleDebug
+echo.
+
+if %ERRORLEVEL% EQU 0 (
+    echo ========================================
+    echo BUILD SUCCESSFUL!
+    echo ========================================
+    echo.
+    echo APK Location: app\build\outputs\apk\debug\app-debug.apk
+    echo.
+    echo You can now transfer this APK to any Android device.
+    echo.
+    echo To install:
+    echo 1. Enable "Unknown Sources" in device settings
+    echo 2. Transfer the APK file to your device
+    echo 3. Open the APK file and tap Install
+    echo.
+    pause
+) else (
+    echo ========================================
+    echo BUILD FAILED!
+    echo ========================================
+    echo.
+    echo Please check the error messages above.
+    echo.
+    pause
+)

@@ -6,7 +6,7 @@
     android:fontFamily="@font/poppins_font_family"
     android:paddingVertical="16dp"
     android:paddingHorizontal="16dp"
-    android:textColor="@color/zen_slate_surface"
+    android:textColor="@color/zen_slate_dark"
     android:textSize="15sp"
     android:background="?android:attr/selectableItemBackground"
     android:ellipsize="end"

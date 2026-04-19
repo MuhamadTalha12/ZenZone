@@ -1,176 +1,374 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/zen_slate_bg"
-    android:fillViewport="true">
+    android:background="@color/zen_slate_bg">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <!-- Header Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/zen_teal_primary"
-            android:gravity="center"
             android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="28dp">
+            android:paddingBottom="80dp">
 
-            <!-- Avatar -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                app:cardBackgroundColor="@color/zen_slate_surface"
-                app:cardCornerRadius="40dp"
-                app:cardElevation="4dp">
+            <!-- Top Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:gravity="center_vertical">
 
                 <TextView
-                    android:id="@+id/tv_avatar_initial"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🧘 ZenZone"
                     android:fontFamily="@font/poppins_font_family"
-                    android:text="Z"
-                    android:textColor="@color/zen_teal_primary"
-                    android:textSize="32sp"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Name -->
-            <TextView
-                android:id="@+id/tv_zen_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Zen Practitioner"
-                android:fontFamily="@font/poppins_font_family"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                <ImageButton
+                    android:id="@+id/btn_settings"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_settings"
+                    android:contentDescription="Settings"
+                    app:tint="@color/zen_slate_dark" />
 
-            <!-- Level -->
-            <TextView
-                android:id="@+id/tv_zen_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:alpha="0.85"
-                android:fontFamily="@font/poppins_font_family"
-                android:text="Level 1 · Digital Monk"
-                android:textColor="@color/zen_slate_surface"
-                android:textSize="15sp" />
+            </LinearLayout>
 
-        </LinearLayout>
-
-        <!-- XP Progress Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="-20dp"
-            app:cardBackgroundColor="@color/zen_slate_surface"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="4dp">
-
+            <!-- Profile Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:gravity="center"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
+
+                <!-- Avatar -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cv_avatar"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:cardBackgroundColor="@color/zen_slate_dark"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="4dp">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/tv_avatar_initial"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:text="E"
+                            android:textColor="@color/zen_slate_surface"
+                            android:textSize="48sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/iv_profile_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:contentDescription="@string/profile_picture" />
+                    </FrameLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Name -->
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Elena S."
+                    android:fontFamily="@font/poppins_font_family"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <!-- Zen Level -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_lotus_logo"
+                        app:tint="@color/zen_teal_primary"
+                        android:layout_marginEnd="6dp" />
+
+                    <TextView
+                        android:id="@+id/tv_zen_level"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Zen Level: Novice Monk"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:textColor="@color/zen_gray_text"
+                        android:textSize="13sp" />
+
+                </LinearLayout>
+
+                <!-- Free Tier Badge -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_premium_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@color/zen_slate_surface"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FREE TIER"
+                        android:textColor="@color/zen_gray_text"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:letterSpacing="0.05"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp" />
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Stats Cards -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="24dp"
+                android:layout_marginBottom="24dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardBackgroundColor="@color/zen_slate_surface"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_badge_time"
+                            app:tint="@color/zen_teal_primary"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tv_total_hours"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="124"
+                            android:textColor="@color/zen_teal_primary"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TOTAL\nFOCUSED\nHOURS"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:gravity="center"
+                            android:lineSpacingMultiplier="1.2"
+                            android:letterSpacing="0.05" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColor="#E0F2F1"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/ic_calendar"
+                            app:tint="@color/zen_teal_primary"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tv_daily_streak"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="18"
+                            android:textColor="@color/zen_slate_dark"
+                            android:textSize="32sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="DAILY STREAK"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:gravity="center"
+                            android:letterSpacing="0.05" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Badges Earned Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Badges Earned"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_font_family" />
+
+                <ImageButton
+                    android:id="@+id/btn_switch_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_stats"
+                    android:contentDescription="Switch View"
+                    app:tint="@color/zen_teal_primary" />
+
+            </LinearLayout>
+
+            <!-- Badges RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_badges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_badge" />
+
+            <!-- Continue Journey Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginVertical="24dp"
+                app:cardBackgroundColor="@color/zen_teal_primary"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
                     <TextView
-                        android:id="@+id/tv_xp_label"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Zen Level 1"
-                        android:fontFamily="@font/poppins_font_family"
-                        android:textColor="@color/zen_slate_dark"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_xp_caption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 / 100 XP"
+                        android:text="Continue your journey"
+                        android:textColor="@color/zen_slate_surface"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
                         android:fontFamily="@font/poppins_font_family"
-                        android:textColor="@color/zen_gray_text"
-                        android:textSize="12sp" />
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tv_journey_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You are only 4 hours away from becoming a 'Seasoned Practitioner'."
+                        android:textColor="@color/zen_slate_surface"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:alpha="0.9"
+                        android:lineSpacingExtra="2dp"
+                        android:layout_marginBottom="20dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_start_focusing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="START FOCUSING"
+                        android:textColor="@color/zen_teal_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_font_family"
+                        android:backgroundTint="@color/zen_slate_surface"
+                        app:cornerRadius="20dp"
+                        android:paddingHorizontal="24dp"
+                        android:paddingVertical="12dp" />
+
                 </LinearLayout>
 
-                <ProgressBar
-                    android:id="@+id/pb_xp_progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_marginTop="10dp"
-                    android:progressDrawable="@drawable/custom_progress_bar" />
+            </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Badges Section -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Zen Badges"
-                android:fontFamily="@font/poppins_font_family"
-                android:textColor="@color/zen_slate_dark"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_badge_count"
+            <!-- Loading Indicator -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/zen_teal_light"
-                android:fontFamily="@font/poppins_font_family"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="0/8"
-                android:textColor="@color/zen_teal_dark"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="40dp"
+                android:visibility="gone" />
+
         </LinearLayout>
 
-        <!-- Badges Grid -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="20dp"
-            app:cardBackgroundColor="@color/zen_slate_surface"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp">
+    </androidx.core.widget.NestedScrollView>
 
-            <GridLayout
-                android:id="@+id/grid_badges"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="4"
-                android:padding="12dp" />
-        </com.google.android.material.card.MaterialCardView>
-
-    </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

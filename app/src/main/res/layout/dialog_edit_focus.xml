@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/zen_slate_dark"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="32dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="#4DFFFFFF"
+        android:backgroundTint="@null" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_font_family"
+        android:text="Edit Focus Goal"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Focus Name -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Focus Name (e.g., Coding, Reading)"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_focus_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_font_family"
+            android:inputType="text"
+            android:textColor="@color/zen_slate_surface"
+            android:textColorHint="#80FFFFFF" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Target Duration -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_minutes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Target Duration (minutes)"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_target_minutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_font_family"
+            android:inputType="number"
+            android:textColor="@color/zen_slate_surface"
+            android:textColorHint="#80FFFFFF" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Frequency label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_font_family"
+        android:text="Frequency"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp" />
+
+    <!-- Frequency Spinner wrapped in a styled container -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="#1AFFFFFF"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp">
+
+        <Spinner
+            android:id="@+id/spinner_frequency"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:popupBackground="@color/zen_slate_dark" />
+    </FrameLayout>
+
+    <!-- Color picker label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_font_family"
+        android:text="Goal Color"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Color swatches -->
+    <RadioGroup
+        android:id="@+id/rg_colors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_color1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/zen_teal_primary"
+            android:button="@null"
+            android:tag="#2A9D8F" />
+
+        <RadioButton
+            android:id="@+id/rb_color2"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/zen_blue_muted"
+            android:button="@null"
+            android:tag="#457B9D" />
+
+        <RadioButton
+            android:id="@+id/rb_color3"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/zen_accent_gold"
+            android:button="@null"
+            android:tag="#E9C46A" />
+
+        <RadioButton
+            android:id="@+id/rb_color4"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="@color/zen_danger_red"
+            android:button="@null"
+            android:tag="#E76F51" />
+
+        <RadioButton
+            android:id="@+id/rb_color5"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="10dp"
+            android:background="#9370DB"
+            android:button="@null"
+            android:tag="#9370DB" />
+
+        <RadioButton
+            android:id="@+id/rb_color6"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="#2E8B57"
+            android:button="@null"
+            android:tag="#2E8B57" />
+
+    </RadioGroup>
+
+    <!-- Action buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <!-- Delete button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_delete_goal"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/poppins_font_family"
+            android:paddingVertical="14dp"
+            android:text="Delete"
+            android:textColor="@color/zen_danger_red"
+            app:strokeColor="@color/zen_danger_red"
+            app:strokeWidth="2dp"
+            app:cornerRadius="14dp" />
+
+        <!-- Update button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_update_goal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/zen_teal_primary"
+            android:fontFamily="@font/poppins_font_family"
+            android:paddingVertical="14dp"
+            android:text="Update"
+            android:textColor="@color/zen_slate_surface"
+            android:textStyle="bold"
+            app:cornerRadius="14dp" />
+    </LinearLayout>
+
+</LinearLayout>

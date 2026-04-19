@@ -1,10 +1,7 @@
 package com.zenzone.app.ui.focus
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 
@@ -13,44 +10,73 @@ class CircularTimerView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E0E0E0") // gray background arc
+        color = Color.parseColor("#F0F4F8") // zen_slate_bg
         style = Paint.Style.STROKE
-        strokeWidth = 20f
-        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 24f
     }
 
     private val fgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#2A9D8F") // zen_teal_primary
         style = Paint.Style.STROKE
-        strokeWidth = 20f
+        strokeWidth = 24f
         strokeCap = Paint.Cap.ROUND
+    }
+
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#402A9D8F") // translucent teal
+        style = Paint.Style.STROKE
+        strokeWidth = 40f
+        maskFilter = BlurMaskFilter(20f, BlurMaskFilter.Blur.NORMAL)
     }
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#264653") // zen_slate_dark
-        textSize = 120f
+        textSize = 100f
         textAlign = Paint.Align.CENTER
-        typeface = android.graphics.Typeface.DEFAULT_BOLD
+        typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+    }
+    
+    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#6B7280") // zen_gray_text
+        textSize = 14f
+        textAlign = Paint.Align.CENTER
+        letterSpacing = 0.2f
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
 
     private var progress = 1f // 0 to 1
     private var timeText = "00:00"
     private val rectF = RectF()
 
+    init {
+        setLayerType(LAYER_TYPE_SOFTWARE, null) // Required for BlurMaskFilter
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        val padding = 40f
+        val padding = 60f
         rectF.set(padding, padding, w - padding, h - padding)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawArc(rectF, -90f, 360f, false, bgPaint)
+        
+        // Draw subtle background ring
+        canvas.drawOval(rectF, bgPaint)
+        
+        // Draw subtle glow under progress
+        canvas.drawArc(rectF, -90f, 360f * progress, false, glowPaint)
+        
+        // Draw progress arc
         canvas.drawArc(rectF, -90f, 360f * progress, false, fgPaint)
 
-        // Draw text
-        val textY = rectF.centerY() - (textPaint.descent() + textPaint.ascent()) / 2
+        // Draw time text with a cleaner look
+        val textY = rectF.centerY() - (textPaint.descent() + textPaint.ascent()) / 2 - 10f
         canvas.drawText(timeText, rectF.centerX(), textY, textPaint)
+        
+        // Draw "REMAINING" label below
+        val labelY = rectF.centerY() + 50f
+        canvas.drawText("FOCUS TIME", rectF.centerX(), labelY, labelPaint)
     }
 
     fun update(remainingMs: Long, totalMs: Long) {

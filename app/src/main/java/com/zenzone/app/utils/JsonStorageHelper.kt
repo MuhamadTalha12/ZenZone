@@ -7,6 +7,8 @@ import com.zenzone.app.model.FocusGoal
 import com.zenzone.app.model.FocusSession
 import com.zenzone.app.model.UserProfile
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileReader
@@ -17,11 +19,18 @@ object JsonStorageHelper {
     private const val FILE_SESSIONS = "focus_sessions.json"
     private const val FILE_PROFILE = "user_profile.json"
     private val gson = Gson()
+    
+    // Mutexes to prevent race conditions during file writes
+    private val goalsMutex = Mutex()
+    private val sessionsMutex = Mutex()
+    private val profileMutex = Mutex()
 
     suspend fun saveGoals(context: Context, goals: List<FocusGoal>) = withContext(Dispatchers.IO) {
-        val file = File(context.filesDir, FILE_GOALS)
-        FileWriter(file).use { writer ->
-            gson.toJson(goals, writer)
+        goalsMutex.withLock {
+            val file = File(context.filesDir, FILE_GOALS)
+            FileWriter(file).use { writer ->
+                gson.toJson(goals, writer)
+            }
         }
     }
 
@@ -35,11 +44,13 @@ object JsonStorageHelper {
     }
 
     suspend fun saveSession(context: Context, session: FocusSession) = withContext(Dispatchers.IO) {
-        val sessions = loadSessions(context).toMutableList()
-        sessions.add(session)
-        val file = File(context.filesDir, FILE_SESSIONS)
-        FileWriter(file).use { writer ->
-            gson.toJson(sessions, writer)
+        sessionsMutex.withLock {
+            val sessions = loadSessions(context).toMutableList()
+            sessions.add(session)
+            val file = File(context.filesDir, FILE_SESSIONS)
+            FileWriter(file).use { writer ->
+                gson.toJson(sessions, writer)
+            }
         }
     }
 
@@ -53,9 +64,11 @@ object JsonStorageHelper {
     }
 
     suspend fun saveProfile(context: Context, profile: UserProfile) = withContext(Dispatchers.IO) {
-        val file = File(context.filesDir, FILE_PROFILE)
-        FileWriter(file).use { writer ->
-            gson.toJson(profile, writer)
+        profileMutex.withLock {
+            val file = File(context.filesDir, FILE_PROFILE)
+            FileWriter(file).use { writer ->
+                gson.toJson(profile, writer)
+            }
         }
     }
 

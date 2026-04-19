@@ -41,6 +41,6 @@ class SplashActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
-        }, 2000)
+        }, com.zenzone.app.utils.Constants.SPLASH_DELAY_MS)
     }
 }

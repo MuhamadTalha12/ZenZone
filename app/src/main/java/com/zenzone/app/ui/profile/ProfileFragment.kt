@@ -1,93 +1,151 @@
 package com.zenzone.app.ui.profile
 
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.GridLayout
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.zenzone.app.R
+import com.zenzone.app.utils.Constants
 import com.zenzone.app.viewmodel.ProfileViewModel
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val viewModel: ProfileViewModel by viewModels()
+    private lateinit var badgeAdapter: BadgeAdapter
+    private var isGridView = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tvTitle: TextView = view.findViewById(R.id.tv_zen_title)
-        val tvSubtitle: TextView = view.findViewById(R.id.tv_zen_subtitle)
-        val tvXpLabel: TextView = view.findViewById(R.id.tv_xp_label)
-        val tvXpCaption: TextView = view.findViewById(R.id.tv_xp_caption)
-        val pbXpProgress: ProgressBar = view.findViewById(R.id.pb_xp_progress)
-        val gridBadges: GridLayout = view.findViewById(R.id.grid_badges)
-        val tvAvatarInitial: TextView = view.findViewById(R.id.tv_avatar_initial)
-        val tvBadgeCount: TextView = view.findViewById(R.id.tv_badge_count)
+        try {
+            val tvUserName: TextView = view.findViewById(R.id.tv_user_name)
+            val tvZenLevel: TextView = view.findViewById(R.id.tv_zen_level)
+            val tvAvatarInitial: TextView = view.findViewById(R.id.tv_avatar_initial)
+            val ivProfileImage: ImageView = view.findViewById(R.id.iv_profile_image)
+            val cvAvatar: View = view.findViewById(R.id.cv_avatar)
+            val cvPremiumBadge: CardView = view.findViewById(R.id.cv_premium_badge)
+            val tvTotalHours: TextView = view.findViewById(R.id.tv_total_hours)
+            val tvDailyStreak: TextView = view.findViewById(R.id.tv_daily_streak)
+            val tvJourneyText: TextView = view.findViewById(R.id.tv_journey_text)
+            val btnStartFocusing: MaterialButton = view.findViewById(R.id.btn_start_focusing)
+            val btnSettings: View = view.findViewById(R.id.btn_settings)
+            val btnSwitchView: ImageButton = view.findViewById(R.id.btn_switch_view)
+            val rvBadges: RecyclerView = view.findViewById(R.id.rv_badges)
+            val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar)
 
-        viewModel.profile.observe(viewLifecycleOwner) { profile ->
-            val displayName = if (profile.userName.isNotBlank()) profile.userName else "Zen Practitioner"
-            tvTitle.text = displayName
-            tvAvatarInitial.text = displayName.first().uppercaseChar().toString()
-            tvSubtitle.text = "Level ${profile.zenLevel}"
-            tvXpLabel.text = "Zen Level ${profile.zenLevel}"
-            
-            val thresholds = listOf(100, 250, 500, 1000, 2000, 3500, 5500, 8000, 11000, 15000)
-            val currentLevelIdx = profile.zenLevel - 1
-            
-            val neededForNext = if (currentLevelIdx < thresholds.size) thresholds[currentLevelIdx] else thresholds.last()
-            val startOfLevel = if (currentLevelIdx > 0) thresholds[currentLevelIdx - 1] else 0
-            
-            val xpIntoLevel = profile.zenXP - startOfLevel
-            val levelSize = neededForNext - startOfLevel
-            
-            pbXpProgress.max = maxOf(levelSize, 1)
-            pbXpProgress.progress = maxOf(0, xpIntoLevel)
-            
-            tvXpCaption.text = "$xpIntoLevel / $levelSize XP"
-        }
+            // Setup Badge RecyclerView
+            badgeAdapter = BadgeAdapter(emptyList(), isGridView)
+            rvBadges.layoutManager = if (isGridView) GridLayoutManager(requireContext(), 3) else LinearLayoutManager(requireContext())
+            rvBadges.adapter = badgeAdapter
 
-        viewModel.badges.observe(viewLifecycleOwner) { badges ->
-            gridBadges.removeAllViews()
-            val inflater = LayoutInflater.from(requireContext())
-            val earnedCount = badges.count { it.isEarned }
-            tvBadgeCount.text = "$earnedCount/${badges.size}"
-            
-            for (badge in badges) {
-                val badgeView = inflater.inflate(R.layout.item_badge, gridBadges, false)
-                val ivIcon = badgeView.findViewById<ImageView>(R.id.iv_badge_icon)
-                val ivLock = badgeView.findViewById<ImageView>(R.id.iv_lock_overlay)
-                val tvName = badgeView.findViewById<TextView>(R.id.tv_badge_name)
-                
-                tvName.text = badge.name
-                
-                // Load the correct icon
-                val iconResId = when (badge.iconRes) {
-                    "ic_badge_first_breath" -> R.drawable.ic_badge_first_breath
-                    "ic_badge_chain" -> R.drawable.ic_badge_chain
-                    "ic_badge_master" -> R.drawable.ic_badge_master
-                    "ic_badge_time" -> R.drawable.ic_badge_time
-                    else -> R.drawable.ic_lotus_logo
-                }
-                ivIcon.setImageResource(iconResId)
-                
-                if (badge.isEarned) {
-                    ivIcon.alpha = 1.0f
-                    tvName.alpha = 1.0f
-                    ivLock.visibility = View.GONE
-                } else {
-                    ivIcon.alpha = 0.25f
-                    tvName.alpha = 0.5f
-                    ivLock.visibility = View.VISIBLE
-                }
-                
-                gridBadges.addView(badgeView)
+            viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+                progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             }
-        }
 
-        viewModel.loadProfile()
+            viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
+                error?.let {
+                    android.widget.Toast.makeText(requireContext(), it, android.widget.Toast.LENGTH_LONG).show()
+                    viewModel.clearErrorMessage()
+                }
+            }
+
+            viewModel.profile.observe(viewLifecycleOwner) { profile ->
+                profile?.let {
+                    // Get name from SharedPreferences
+                    val prefs = requireContext().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+                    val savedName = prefs.getString(Constants.PREF_USER_NAME, "Zen Practitioner")
+                    
+                    tvUserName.text = savedName
+
+                    // Milestone thresholds in hours (matching StatsFragment)
+                    val milestones = listOf(0, 5, 15, 40, 100, 250, 500)
+                    val milestoneNames = listOf(
+                        "Novice Monk",
+                        "Calm Keeper", 
+                        "Focused Warrior",
+                        "Seasoned Practitioner",
+                        "Deep Diver",
+                        "Zen Master",
+                        "Enlightened One"
+                    )
+                    
+                    // Calculate and display total hours
+                    val totalHours = it.totalFocusedMinutes / 60.0
+                    tvTotalHours.text = String.format("%.1f", totalHours)
+
+                    // Find current level based on totalHours
+                    var level = 1
+                    for (i in 1 until milestones.size) {
+                        if (totalHours >= milestones[i]) {
+                            level = i + 1
+                        } else {
+                            break
+                        }
+                    }
+                    
+                    val levelName = milestoneNames[level - 1]
+                    tvZenLevel.text = "Zen Level: $levelName"
+
+                    // Show avatar initial (no image upload feature)
+                    ivProfileImage.visibility = View.GONE
+                    tvAvatarInitial.visibility = View.VISIBLE
+                    tvAvatarInitial.text = savedName?.trim()?.firstOrNull()?.uppercaseChar()?.toString() ?: "Z"
+
+                    // Show daily streak
+                    tvDailyStreak.text = it.currentChain.toString()
+
+                    if (level < milestones.size) {
+                        val hoursToNext = milestones[level].toDouble() - totalHours
+                        val nextLevelName = milestoneNames[level]
+                        tvJourneyText.text = "You are only ${String.format("%.1f", hoursToNext)} hours away from becoming a '$nextLevelName'."
+                    } else {
+                        tvJourneyText.text = "Congratulations! You've reached the highest level: ${milestoneNames.last()}!"
+                    }
+
+                    cvPremiumBadge.visibility = View.VISIBLE
+                }
+            }
+
+            viewModel.badges.observe(viewLifecycleOwner) { allBadges ->
+                allBadges?.let {
+                    badgeAdapter.updateData(it)
+                }
+            }
+
+            btnSwitchView.setOnClickListener {
+                isGridView = !isGridView
+                rvBadges.layoutManager = if (isGridView) GridLayoutManager(requireContext(), 3) else LinearLayoutManager(requireContext())
+                badgeAdapter.setViewMode(isGridView)
+                // Update icon - grid view shows list icon, list view shows grid icon
+                btnSwitchView.setImageResource(if (isGridView) R.drawable.ic_stats else R.drawable.ic_home)
+            }
+
+            // Remove click listener from avatar (no upload feature)
+            cvAvatar.setOnClickListener(null)
+
+            btnStartFocusing.setOnClickListener {
+                val bottomNav = activity?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
+                bottomNav?.selectedItemId = R.id.nav_focus
+            }
+
+            btnSettings.setOnClickListener {
+                android.widget.Toast.makeText(requireContext(), "Settings - Coming soon!", android.widget.Toast.LENGTH_SHORT).show()
+            }
+
+            viewModel.loadProfile()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            android.widget.Toast.makeText(requireContext(), "Error loading profile: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+        }
     }
 }
