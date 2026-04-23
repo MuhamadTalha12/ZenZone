@@ -196,13 +196,9 @@ Contributions are welcome! Please follow these steps:
 - Add comments for complex logic
 - Keep functions small and focused
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 👨‍💻 Author
 
-**Your Name**
+**Muhammad Talha**
 - GitHub: [@MuhamadTalha12](https://github.com/MuhamadTalha12)
 - Email: boyg5615@gmail.com
 
@@ -234,9 +230,6 @@ Future enhancements planned:
 ---
 
 <div align="center">
-
-**Made with ❤️ and ☕**
-
 If you find this project useful, please consider giving it a ⭐!
 
 </div>
