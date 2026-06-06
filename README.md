@@ -182,16 +182,53 @@ The universal output will be exported to: `ZenZone.apk` (or `app/build/outputs/a
 
 ---
 
+<<<<<<< HEAD
 ## 📄 License
 
 This project is licensed under the MIT License - see the `LICENSE` file for details.
+=======
+## 👨‍💻 Author
+
+**Muhammad Talha**
+- GitHub: [@MuhamadTalha12](https://github.com/MuhamadTalha12)
+- Email: boyg5615@gmail.com
+
+## 🙏 Acknowledgments
+
+- Material Design Icons
+- MPAndroidChart library
+- Android community for inspiration and support
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+- Open an [issue](https://github.com/MuhamadTalha12/zenzone/issues)
+- Check existing issues for solutions
+- Contact the maintainer
+
+## 🗺️ Roadmap
+
+Future enhancements planned:
+- [ ] Cloud sync across devices
+- [ ] Social features (share achievements)
+- [ ] Custom themes and color schemes
+- [ ] Widget support
+- [ ] Pomodoro technique integration
+- [ ] Focus session analytics export
+- [ ] Reminder notifications
+- [ ] Dark mode improvements
+>>>>>>> d891a322e6dafd009102da0b6fba6cf521a38043
 
 ---
 
 <div align="center">
+<<<<<<< HEAD
 
 **Cultivated with ❤️, ☕, and mindfulness.**
 
 *If ZenZone helps you find your flow, please give it a ⭐ on GitHub!*
+=======
+If you find this project useful, please consider giving it a ⭐!
+>>>>>>> d891a322e6dafd009102da0b6fba6cf521a38043
 
 </div>
