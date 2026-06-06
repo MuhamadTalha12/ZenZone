@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/zen_slate_dark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Adjust Profile Picture"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center_horizontal" />
+
+    <!-- Crop Preview Circle Frame -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        app:cardCornerRadius="100dp"
+        app:cardBackgroundColor="#2C3A50"
+        app:cardElevation="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/zen_teal_primary">
+
+        <ImageView
+            android:id="@+id/iv_adjust_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="matrix"
+            android:contentDescription="Image Adjustment Preview" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Rotate Control -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_adjust_rotate"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:text="🔄 ROTATE 90°"
+        android:textColor="@color/zen_teal_light"
+        app:strokeColor="@color/zen_teal_light"
+        app:cornerRadius="12dp"
+        android:textSize="12sp" />
+
+    <!-- Zoom Control -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zoom"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="4dp" />
+
+    <SeekBar
+        android:id="@+id/sb_adjust_zoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="200"
+        android:progress="0"
+        android:thumbTint="@color/zen_teal_primary"
+        android:progressTint="@color/zen_teal_primary"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Pan X Control -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move Horizontally (Left / Right)"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="4dp" />
+
+    <SeekBar
+        android:id="@+id/sb_adjust_pan_x"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="400"
+        android:progress="200"
+        android:thumbTint="@color/zen_teal_primary"
+        android:progressTint="@color/zen_teal_primary"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Pan Y Control -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move Vertically (Up / Down)"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="4dp" />
+
+    <SeekBar
+        android:id="@+id/sb_adjust_pan_y"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="400"
+        android:progress="200"
+        android:thumbTint="@color/zen_teal_primary"
+        android:progressTint="@color/zen_teal_primary"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_adjust_cancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CANCEL"
+            android:textColor="@color/zen_danger_red"
+            android:fontFamily="@font/poppins_font_family" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_adjust_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="SAVE &amp; APPLY"
+            android:textColor="@color/zen_slate_surface"
+            android:backgroundTint="@color/zen_teal_primary"
+            android:fontFamily="@font/poppins_font_family"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

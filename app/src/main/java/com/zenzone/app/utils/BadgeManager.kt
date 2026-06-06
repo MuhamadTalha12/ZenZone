@@ -73,6 +73,14 @@ object BadgeManager {
                 "ic_badge_time",
                 0,
                 profile.badges.contains("hours_10")
+            ),
+            ZenBadge(
+                "night_owl",
+                "Night Owl",
+                "Complete 5 late-night focus sessions (11 PM - 4 AM).",
+                "ic_badge_master",
+                0,
+                profile.badges.contains("night_owl")
             )
         )
     }
@@ -85,7 +93,8 @@ object BadgeManager {
         currentBadges: List<String>,
         currentChain: Int,
         totalMinutes: Long,
-        totalSessions: Int
+        totalSessions: Int,
+        lateSessions: Int = 0
     ): Pair<List<String>, List<ZenBadge>> {
         val earnedBadges = currentBadges.toMutableList()
         val newlyUnlockedBadges = mutableListOf<ZenBadge>()
@@ -105,6 +114,7 @@ object BadgeManager {
         checkBadge("chain_60", "Focus Master", Constants.BADGE_CHAIN_60, currentChain >= Constants.BADGE_CHAIN_60)
         checkBadge("chain_100", "Digital Ninja", Constants.BADGE_CHAIN_100, currentChain >= Constants.BADGE_CHAIN_100)
         checkBadge("hours_10", "Time Bender", 0, totalMinutes >= Constants.BADGE_HOURS_10_MINUTES)
+        checkBadge("night_owl", "Night Owl", 0, lateSessions >= 5)
         
         return Pair(earnedBadges, newlyUnlockedBadges)
     }

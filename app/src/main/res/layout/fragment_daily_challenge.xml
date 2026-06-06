@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/zen_slate_bg">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
+
+            <!-- Common Navigation Bar -->
+            <include layout="@layout/layout_common_navbar" />
+
+            <!-- Title & Subtitle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Daily"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="32sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quests &amp; Challenges"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:textColor="@color/zen_teal_primary"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:fontStyle="italic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Complete daily focus challenges to earn bonus Zen XP and rare plant seeds for your garden."
+                    android:fontFamily="@font/poppins_font_family"
+                    android:textColor="@color/zen_gray_text"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+
+            <!-- Challenge Cards Container -->
+            <LinearLayout
+                android:id="@+id/ll_challenges_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp">
+
+                <!-- Challenge 1 Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_challenge_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/zen_slate_surface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_title_challenge_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_toStartOf="@id/iv_checkmark_1"
+                                android:text="Daily Focus Duration"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/iv_checkmark_1"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_alignParentEnd="true"
+                                android:src="@android:drawable/checkbox_on_background"
+                                app:tint="@color/zen_teal_primary"
+                                android:visibility="gone"
+                                android:contentDescription="Completed" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/tv_desc_challenge_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:text="Focus for 30 minutes in any session"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="13sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp">
+
+                            <!-- Progress Indicator -->
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progress_challenge_1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toStartOf="@id/tv_ratio_challenge_1"
+                                android:layout_marginEnd="16dp"
+                                app:trackThickness="8dp"
+                                app:trackCornerRadius="4dp"
+                                app:trackColor="#1A2A9D8F"
+                                app:indicatorColor="@color/zen_teal_primary" />
+
+                            <TextView
+                                android:id="@+id/tv_ratio_challenge_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="0/30"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical">
+
+                            <!-- Rewards Badges -->
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_xp_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+50 XP"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_seed_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="🌱 1 Seed"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Challenge 2 Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_challenge_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/zen_slate_surface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_title_challenge_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_toStartOf="@id/iv_checkmark_2"
+                                android:text="Multiple Sessions"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/iv_checkmark_2"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_alignParentEnd="true"
+                                android:src="@android:drawable/checkbox_on_background"
+                                app:tint="@color/zen_teal_primary"
+                                android:visibility="gone"
+                                android:contentDescription="Completed" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/tv_desc_challenge_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:text="Complete 2 focus sessions today"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="13sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp">
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progress_challenge_2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toStartOf="@id/tv_ratio_challenge_2"
+                                android:layout_marginEnd="16dp"
+                                app:trackThickness="8dp"
+                                app:trackCornerRadius="4dp"
+                                app:trackColor="#1A2A9D8F"
+                                app:indicatorColor="@color/zen_teal_primary" />
+
+                            <TextView
+                                android:id="@+id/tv_ratio_challenge_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="0/2"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_xp_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+30 XP"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_seed_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="🌱 1 Seed"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Challenge 3 Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_challenge_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/zen_slate_surface"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_title_challenge_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_toStartOf="@id/iv_checkmark_3"
+                                android:text="Streak Focus"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/iv_checkmark_3"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_alignParentEnd="true"
+                                android:src="@android:drawable/checkbox_on_background"
+                                app:tint="@color/zen_teal_primary"
+                                android:visibility="gone"
+                                android:contentDescription="Completed" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/tv_desc_challenge_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/poppins_font_family"
+                            android:text="Maintain an active focus streak today"
+                            android:textColor="@color/zen_gray_text"
+                            android:textSize="13sp" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp">
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progress_challenge_3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toStartOf="@id/tv_ratio_challenge_3"
+                                android:layout_marginEnd="16dp"
+                                app:trackThickness="8dp"
+                                app:trackCornerRadius="4dp"
+                                app:trackColor="#1A2A9D8F"
+                                app:indicatorColor="@color/zen_teal_primary" />
+
+                            <TextView
+                                android:id="@+id/tv_ratio_challenge_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:text="0/1"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textColor="@color/zen_slate_dark"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_xp_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="+40 XP"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chip_seed_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="🌱 1 Seed"
+                                app:chipBackgroundColor="#E8F4F3"
+                                app:chipStrokeWidth="0dp"
+                                android:textColor="@color/zen_teal_primary"
+                                android:fontFamily="@font/poppins_font_family"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Celebration Animation Overlay -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_celebration"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:elevation="20dp"
+        android:visibility="gone"
+        app:lottie_loop="false"
+        app:lottie_autoPlay="false" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

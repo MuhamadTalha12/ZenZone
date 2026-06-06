@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@drawable/bg_widget">
+
+    <ImageView
+        android:id="@+id/iv_widget_logo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_lotus_logo"
+        android:contentDescription="ZenZone Logo" />
+
+    <TextView
+        android:id="@+id/tv_widget_streak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 🔥"
+        android:textColor="#FFFFFF"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/tv_widget_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Focus Chain Streak"
+        android:textColor="#B0BEC5"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp"
+        android:gravity="center" />
+
+</LinearLayout>

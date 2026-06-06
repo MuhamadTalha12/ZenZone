@@ -33,4 +33,18 @@ object Constants {
     
     // Splash screen delay
     const val SPLASH_DELAY_MS = 2000L
+
+    // Motivational reminders for WorkManager notifications
+    val MOTIVATIONAL_REMINDERS = listOf(
+        "Keep the chain burning! 🔥 Focus for a few minutes today to protect your streak.",
+        "Your focus is your superpower. 🧘‍♂️ Take a moment to step into ZenZone.",
+        "A 10-minute focus session is all it takes to maintain your momentum. Let's do it!",
+        "Quiet the noise, find your flow. 🧠 Start a deep work session now.",
+        "Don't let your daily chain break! ⏳ Take a small step towards your goal.",
+        "Consistency beats intensity. 🧘 Maintain your focus habit today.",
+        "Step away from distractions and level up your Zen. Your future self will thank you.",
+        "One goal at a time. One session at a time. Let's center ourselves in ZenZone.",
+        "Your focus chain is waiting. 🔥 Complete a session today to keep it growing!",
+        "Every session builds your focus muscle. 💪 Let's focus on a goal today."
+    )
 }

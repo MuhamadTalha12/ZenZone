@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/zen_slate_dark">
+
+    <TextView
+        android:id="@+id/tv_auth_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign In to ZenZone"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tv_auth_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save your focus metrics, badges, and chains securely in the cloud."
+        android:textColor="@color/zen_gray_text"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Email"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:inputType="textEmailAddress"
+            android:fontFamily="@font/poppins_font_family"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Password"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/zen_teal_light"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:inputType="textPassword"
+            android:fontFamily="@font/poppins_font_family"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SIGN IN"
+        android:textColor="@color/zen_slate_surface"
+        android:backgroundTint="@color/zen_teal_primary"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:paddingVertical="14dp"
+        app:cornerRadius="12dp"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_toggle_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="New to ZenZone? Create an account"
+        android:textColor="@color/zen_teal_primary"
+        android:textSize="13sp"
+        android:clickable="true"
+        android:focusable="true"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="8dp" />
+
+</LinearLayout>

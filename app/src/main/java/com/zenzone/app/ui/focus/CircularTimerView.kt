@@ -61,6 +61,22 @@ class CircularTimerView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         
+        // Calculate heartbeat scaling
+        val now = System.currentTimeMillis()
+        val pulseScale = if (progress <= 0.15f && progress > 0f) {
+            val factor = 1.0f - (progress / 0.15f) // 0 to 1
+            // Frequency increases from 3.0 to 9.0 rad/s as time winds down
+            val speed = (3.0 + factor * 6.0) * (now / 1000.0)
+            val sinVal = Math.sin(speed)
+            val pulse = Math.pow(Math.max(0.0, sinVal), 4.0).toFloat()
+            1.0f + (pulse * 0.15f * factor)
+        } else {
+            1.0f
+        }
+
+        fgPaint.strokeWidth = 24f * pulseScale
+        glowPaint.strokeWidth = 40f * pulseScale
+
         // Draw subtle background ring
         canvas.drawOval(rectF, bgPaint)
         
@@ -77,6 +93,11 @@ class CircularTimerView @JvmOverloads constructor(
         // Draw "REMAINING" label below
         val labelY = rectF.centerY() + 50f
         canvas.drawText("FOCUS TIME", rectF.centerX(), labelY, labelPaint)
+
+        // Request next frame if heartbeat is active to animate continuously
+        if (progress <= 0.15f && progress > 0f) {
+            postInvalidateOnAnimation()
+        }
     }
 
     fun update(remainingMs: Long, totalMs: Long) {
@@ -88,3 +109,4 @@ class CircularTimerView @JvmOverloads constructor(
         invalidate()
     }
 }
+

@@ -73,6 +73,13 @@ class HomeViewModel(
                     loadedGoals
                 }
 
+                val newProfileChain = updatedGoals.sumOf { it.currentChain }
+                val profile = userRepository.loadProfile()
+                if (profile.currentChain != newProfileChain) {
+                    val updatedProfile = profile.copy(currentChain = newProfileChain)
+                    userRepository.saveProfile(updatedProfile)
+                }
+
                 withContext(Dispatchers.Main) {
                     _goals.value = updatedGoals
                     calculateTotalStreak(updatedGoals)
@@ -160,6 +167,14 @@ class HomeViewModel(
                 val currentList = _goals.value.orEmpty().toMutableList()
                 currentList.add(goal)
                 repository.saveGoals(currentList)
+
+                val newProfileChain = currentList.sumOf { it.currentChain }
+                val profile = userRepository.loadProfile()
+                if (profile.currentChain != newProfileChain) {
+                    val updatedProfile = profile.copy(currentChain = newProfileChain)
+                    userRepository.saveProfile(updatedProfile)
+                }
+
                 withContext(Dispatchers.Main) {
                     _goals.value = currentList
                     calculateTotalStreak(currentList)
@@ -188,6 +203,14 @@ class HomeViewModel(
                 if (idx != -1) {
                     currentList[idx] = goal
                     repository.saveGoals(currentList)
+
+                    val newProfileChain = currentList.sumOf { it.currentChain }
+                    val profile = userRepository.loadProfile()
+                    if (profile.currentChain != newProfileChain) {
+                        val updatedProfile = profile.copy(currentChain = newProfileChain)
+                        userRepository.saveProfile(updatedProfile)
+                    }
+
                     withContext(Dispatchers.Main) {
                         _goals.value = currentList
                         calculateTotalStreak(currentList)
@@ -207,6 +230,14 @@ class HomeViewModel(
                 val currentList = _goals.value.orEmpty().toMutableList()
                 currentList.removeAll { it.id == goalId }
                 repository.saveGoals(currentList)
+
+                val newProfileChain = currentList.sumOf { it.currentChain }
+                val profile = userRepository.loadProfile()
+                if (profile.currentChain != newProfileChain) {
+                    val updatedProfile = profile.copy(currentChain = newProfileChain)
+                    userRepository.saveProfile(updatedProfile)
+                }
+
                 withContext(Dispatchers.Main) {
                     _goals.value = currentList
                     calculateTotalStreak(currentList)
@@ -214,6 +245,21 @@ class HomeViewModel(
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     _errorMessage.value = "Failed to delete goal: ${e.message}"
+                }
+            }
+        }
+    }
+
+    fun updateUserProfile(profile: UserProfile) {
+        viewModelScope.launch {
+            try {
+                userRepository.saveProfile(profile)
+                withContext(Dispatchers.Main) {
+                    _userProfile.value = profile
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Failed to update profile: ${e.message}"
                 }
             }
         }

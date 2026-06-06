@@ -7,6 +7,18 @@
     android:padding="20dp"
     android:gravity="center_vertical">
 
+    <ImageView
+        android:id="@+id/iv_common_menu"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_menu"
+        app:tint="@color/zen_slate_dark"
+        android:contentDescription="Open Navigation Drawer"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
     <TextView
         android:id="@+id/tv_app_logo_name"
         android:layout_width="0dp"
@@ -17,6 +29,18 @@
         android:textColor="@color/zen_slate_dark"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/iv_common_agent"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_lotus_logo"
+        app:tint="@color/zen_slate_dark"
+        android:contentDescription="Ask Zen Agent"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless" />
 
     <ImageView
         android:id="@+id/iv_common_info"

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/zen_slate_dark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Settings"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Profile Picture Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Profile Picture"
+        android:textColor="@color/zen_teal_light"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="12dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardBackgroundColor="@color/zen_slate_surface"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="2dp"
+            android:layout_marginEnd="16dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_settings_avatar_initial"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:fontFamily="@font/poppins_font_family"
+                    android:text="Z"
+                    android:textColor="@color/zen_slate_dark"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/iv_settings_profile_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    android:contentDescription="Profile Preview" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_settings_select_image"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Update"
+            android:textColor="@color/zen_teal_light"
+            app:strokeColor="@color/zen_teal_light"
+            app:strokeWidth="1dp"
+            app:cornerRadius="12dp"
+            android:textSize="12sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_settings_remove_image"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Delete"
+            android:textColor="@color/zen_danger_red"
+            app:strokeColor="@color/zen_danger_red"
+            app:strokeWidth="1dp"
+            app:cornerRadius="12dp"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Edit Name Field -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_settings_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="Display Name"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_settings_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:inputType="textPersonName"
+            android:fontFamily="@font/poppins_font_family"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Save Name Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings_save_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SAVE NAME"
+        android:textColor="@color/zen_slate_surface"
+        android:backgroundTint="@color/zen_teal_primary"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="12dp" />
+
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#2C3A50"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Custom Blocklist Option -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings_custom_blocklist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:text="CUSTOM BLOCKLIST"
+        android:textColor="@color/zen_teal_light"
+        app:strokeColor="@color/zen_teal_light"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        app:cornerRadius="12dp" />
+
+    <!-- Change Password Option -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings_change_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:text="CHANGE PASSWORD"
+        android:textColor="@color/zen_slate_surface"
+        app:strokeColor="#2C3A50"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        app:cornerRadius="12dp" />
+
+    <!-- Delete Account Option -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings_delete_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:text="DELETE ACCOUNT"
+        android:textColor="@color/zen_danger_red"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+</LinearLayout>

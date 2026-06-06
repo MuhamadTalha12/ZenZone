@@ -46,6 +46,9 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 
                 // Update profile with current chain from goals
                 val updatedProfile = curProfile.copy(currentChain = sumStreak)
+                if (curProfile.currentChain != sumStreak) {
+                    userRepo.saveProfile(updatedProfile)
+                }
 
                 withContext(Dispatchers.Main) {
                     _profile.value = updatedProfile

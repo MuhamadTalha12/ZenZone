@@ -16,6 +16,7 @@ import com.zenzone.app.repository.FocusRepository
 import com.zenzone.app.repository.UserRepository
 import com.zenzone.app.viewmodel.HomeViewModel
 import com.zenzone.app.viewmodel.HomeViewModelFactory
+import com.zenzone.app.ui.main.MainActivity
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -37,6 +38,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val cvCommonProfile = view.findViewById<View>(R.id.cv_common_profile_mini)
             val tvCommonInitial = view.findViewById<TextView>(R.id.tv_common_profile_initial_mini)
             val ivCommonProfileImage = view.findViewById<ImageView>(R.id.iv_common_profile_image_mini)
+            view.findViewById<View>(R.id.iv_common_menu)?.setOnClickListener {
+                (activity as? MainActivity)?.openDrawer()
+            }
+            view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
+                com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
+            }
 
             val rv = view.findViewById<RecyclerView>(R.id.rv_zen_cards)
             val rvRecentSessions = view.findViewById<RecyclerView>(R.id.rv_recent_sessions)
@@ -47,12 +54,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val tvFocusTime = view.findViewById<TextView>(R.id.tv_focus_time)
             val btnEditGoals = view.findViewById<MaterialButton>(R.id.btn_edit_goals)
 
+            // Zen Garden bindings
+            val cvZenGarden = view.findViewById<View>(R.id.cv_zen_garden)
+            val tvGardenPeek = view.findViewById<TextView>(R.id.tv_garden_peek)
+            val tvGardenStatusEmoji = view.findViewById<TextView>(R.id.tv_garden_status_emoji)
+
+            cvZenGarden.setOnClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment, com.zenzone.app.ui.garden.ZenGardenFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+
             // Setup goals adapter
             adapter = ZenCardAdapter(
                 goals = emptyList(),
                 onCardClick = { goal ->
-                    val bottomNav = activity?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-                    bottomNav?.selectedItemId = R.id.nav_focus
+                    (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_focus)
                 },
                 onEditClick = { goal ->
                     EditFocusDialogFragment(
@@ -72,8 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             
             // Setup recent sessions adapter
             recentSessionAdapter = RecentSessionAdapter(emptyList()) {
-                val bottomNav = activity?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-                bottomNav?.selectedItemId = R.id.nav_stats
+                (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_stats)
             }
             rvRecentSessions.layoutManager = LinearLayoutManager(requireContext())
             rvRecentSessions.adapter = recentSessionAdapter
@@ -105,37 +122,63 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 tvFocusTime.text = time
             }
             
-            // Observe user profile for common navbar
-            viewModel.userProfile.observe(viewLifecycleOwner) { profile ->
-                profile?.let {
-                    val initial = if (it.userName.isNotEmpty()) {
-                        it.userName.first().uppercaseChar().toString()
-                    } else {
-                        "Z"
-                    }
-                    tvCommonInitial.text = initial
-                    
-                    if (!it.profileImageUri.isNullOrBlank()) {
-                        try {
-                            val uri = android.net.Uri.parse(it.profileImageUri)
-                            ivCommonProfileImage.setImageURI(uri)
-                            ivCommonProfileImage.visibility = View.VISIBLE
-                            tvCommonInitial.visibility = View.GONE
-                        } catch (e: Exception) {
-                            ivCommonProfileImage.visibility = View.GONE
-                            tvCommonInitial.visibility = View.VISIBLE
-                        }
-                    } else {
-                        ivCommonProfileImage.visibility = View.GONE
-                        tvCommonInitial.visibility = View.VISIBLE
-                    }
-                }
-            }
+             // Observe user profile for common navbar
+             viewModel.userProfile.observe(viewLifecycleOwner) { profile ->
+                 profile?.let {
+                     val displayName = it.userName.ifBlank { "ZenZone" }
+                     view.findViewById<TextView>(R.id.tv_app_logo_name)?.text = "🧘 $displayName"
+
+                     val initial = if (it.userName.isNotEmpty()) {
+                         it.userName.first().uppercaseChar().toString()
+                     } else {
+                         "Z"
+                     }
+                     tvCommonInitial.text = initial
+                     
+                     if (!it.profileImageUri.isNullOrBlank()) {
+                         if (com.zenzone.app.utils.ImageUtils.isBase64Image(it.profileImageUri)) {
+                             val bitmap = com.zenzone.app.utils.ImageUtils.base64ToBitmap(it.profileImageUri)
+                             if (bitmap != null) {
+                                 ivCommonProfileImage.setImageBitmap(bitmap)
+                                 ivCommonProfileImage.visibility = View.VISIBLE
+                                 tvCommonInitial.visibility = View.GONE
+                             } else {
+                                 ivCommonProfileImage.visibility = View.GONE
+                                 tvCommonInitial.visibility = View.VISIBLE
+                             }
+                         } else {
+                             try {
+                                 val uri = android.net.Uri.parse(it.profileImageUri)
+                                 ivCommonProfileImage.setImageURI(uri)
+                                 ivCommonProfileImage.visibility = View.VISIBLE
+                                 tvCommonInitial.visibility = View.GONE
+                             } catch (e: Exception) {
+                                 ivCommonProfileImage.visibility = View.GONE
+                                 tvCommonInitial.visibility = View.VISIBLE
+                             }
+                         }
+                     } else {
+                         ivCommonProfileImage.visibility = View.GONE
+                         tvCommonInitial.visibility = View.VISIBLE
+                     }
+
+                     // Update garden peek layout
+                     val plantCount = it.zenXP / 100
+                     val isWithered = (it.currentChain == 0)
+                     tvGardenStatusEmoji.text = if (isWithered && plantCount > 0) "🥀" else if (plantCount == 0) "🕳️" else "🌸"
+                     tvGardenPeek.text = if (isWithered && plantCount > 0) {
+                         "Streak broken! Revive your withered plants by starting a focus session."
+                     } else if (plantCount == 0) {
+                         "Your garden is currently empty. Complete focus sessions and earn 100 XP to start planting!"
+                     } else {
+                         "Thriving garden with $plantCount plant(s) grown from ${it.zenXP} XP."
+                     }
+                 }
+             }
             
             // Profile icon click
             cvCommonProfile.setOnClickListener {
-                val bottomNav = activity?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-                bottomNav?.selectedItemId = R.id.nav_profile
+                (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_profile)
             }
 
             // Instruction icon click
@@ -176,17 +219,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onResume() {
         super.onResume()
         viewModel.loadUserProfile()
+        viewModel.loadGoals()
     }
 
     private fun showInstructionsDialog() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.ZenDialogTheme)
-            .setTitle("How to use ZenZone")
-            .setMessage("1. Create a Focus Goal using the '+' button.\n" +
-                        "2. Tap on a goal card to start a focus session.\n" +
-                        "3. Use the Timer page to manage your deep work.\n" +
-                        "4. Track your progress on the Stats page.\n" +
-                        "5. Earn badges and maintain your Zen streak!")
-            .setPositiveButton("Got it", null)
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_home_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

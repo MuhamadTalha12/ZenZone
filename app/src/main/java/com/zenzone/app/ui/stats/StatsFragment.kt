@@ -1,8 +1,10 @@
 package com.zenzone.app.ui.stats
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -18,6 +20,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.zenzone.app.R
 import com.zenzone.app.viewmodel.StatsViewModel
+import com.zenzone.app.ui.main.MainActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,6 +46,14 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             val btnViewAll: TextView = view.findViewById(R.id.btn_view_all)
             val ivCommonInfo: View = view.findViewById(R.id.iv_common_info)
             val cvCommonProfile: View = view.findViewById(R.id.cv_common_profile_mini)
+            val tvCommonInitial = view.findViewById<TextView>(R.id.tv_common_profile_initial_mini)
+            val ivCommonProfileImage = view.findViewById<ImageView>(R.id.iv_common_profile_image_mini)
+            view.findViewById<View>(R.id.iv_common_menu)?.setOnClickListener {
+                (activity as? MainActivity)?.openDrawer()
+            }
+            view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
+                com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
+            }
             val btnMilestoneInfo: View = view.findViewById(R.id.btn_milestone_info)
             
             rvHistory = view.findViewById(R.id.rv_session_history)
@@ -62,6 +73,43 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
 
             viewModel.profile.observe(viewLifecycleOwner) { profile ->
                 profile?.let {
+                    val displayName = it.userName.ifBlank { "ZenZone" }
+                    view.findViewById<TextView>(R.id.tv_app_logo_name)?.text = "🧘 $displayName"
+
+                    val initial = if (it.userName.isNotEmpty()) {
+                        it.userName.first().uppercaseChar().toString()
+                    } else {
+                        "Z"
+                    }
+                    tvCommonInitial.text = initial
+                    
+                    if (!it.profileImageUri.isNullOrBlank()) {
+                        if (com.zenzone.app.utils.ImageUtils.isBase64Image(it.profileImageUri)) {
+                            val bitmap = com.zenzone.app.utils.ImageUtils.base64ToBitmap(it.profileImageUri)
+                            if (bitmap != null) {
+                                ivCommonProfileImage.setImageBitmap(bitmap)
+                                ivCommonProfileImage.visibility = View.VISIBLE
+                                tvCommonInitial.visibility = View.GONE
+                            } else {
+                                ivCommonProfileImage.visibility = View.GONE
+                                tvCommonInitial.visibility = View.VISIBLE
+                            }
+                        } else {
+                            try {
+                                val uri = android.net.Uri.parse(it.profileImageUri)
+                                ivCommonProfileImage.setImageURI(uri)
+                                ivCommonProfileImage.visibility = View.VISIBLE
+                                tvCommonInitial.visibility = View.GONE
+                            } catch (e: Exception) {
+                                ivCommonProfileImage.visibility = View.GONE
+                                tvCommonInitial.visibility = View.VISIBLE
+                            }
+                        }
+                    } else {
+                        ivCommonProfileImage.visibility = View.GONE
+                        tvCommonInitial.visibility = View.VISIBLE
+                    }
+
                     tvCurrentStreak.text = it.currentChain.toString()
                     
                     val totalHours = it.totalFocusedMinutes / 60.0
@@ -124,11 +172,18 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                         rvHistory.visibility = View.VISIBLE
                         btnViewAll.visibility = if (it.size > 3) View.VISIBLE else View.GONE
                     }
+
+                    // Update Peak Hours and Forecasting
+                    updatePeakHoursChart(it)
+                    updateForecasting(it)
                 }
             }
 
             viewModel.weeklyMinutesMap.observe(viewLifecycleOwner) { map ->
                 map?.let {
+                    // Update heatmap view
+                    view.findViewById<HeatmapView>(R.id.heatmap_view)?.setData(it)
+
                     val calendar = Calendar.getInstance()
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     var weeklyTotal = 0
@@ -187,8 +242,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             }
 
             cvCommonProfile.setOnClickListener {
-                val bottomNav = activity?.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottom_nav)
-                bottomNav?.selectedItemId = R.id.nav_profile
+                (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_profile)
             }
 
             viewModel.loadStats()
@@ -197,43 +251,49 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadStats()
+    }
+
     private fun showMilestoneInstructions() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Zen Milestones")
-            .setMessage("Level up your Zen status by accumulating focus hours:\n\n" +
-                        "• LVL 1: Novice Monk (0h+)\n" +
-                        "• LVL 2: Calm Keeper (5h+)\n" +
-                        "• LVL 3: Focused Warrior (15h+)\n" +
-                        "• LVL 4: Seasoned Practitioner (40h+)\n" +
-                        "• LVL 5: Deep Diver (100h+)\n" +
-                        "• LVL 6: Zen Master (250h+)\n" +
-                        "• LVL 7: Enlightened One (500h+)\n\n" +
-                        "Keep focusing to reach the next level!")
-            .setPositiveButton("Got it", null)
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_milestone_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun showStatsInstructions() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("📊 Stats & Progress")
-            .setMessage(
-                "Track your focus journey:\n\n" +
-                "📈 Weekly Insights\n" +
-                "See your total focus hours for the past 7 days and identify your peak focus days.\n\n" +
-                "🎯 Milestone Progress\n" +
-                "Track your progress toward the next Zen level. Each level requires more focused hours.\n\n" +
-                "🔥 Day Streak\n" +
-                "Your current consecutive days of maintaining focus. Keep the streak alive!\n\n" +
-                "📅 Bar Chart\n" +
-                "Visual representation of your daily focus minutes over the past week.\n\n" +
-                "📝 Session History\n" +
-                "Recent focus sessions with duration and efficiency ratings."
-            )
-            .setPositiveButton("Got it", null)
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_stats_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun setupBarChart() {
+        val prefs = requireContext().getSharedPreferences(com.zenzone.app.utils.Constants.PREFS_NAME, Context.MODE_PRIVATE)
+        val isAmoled = prefs.getBoolean("pref_amoled_theme", false)
+        val labelColor = if (isAmoled) Color.parseColor("#A0A0A0") else Color.parseColor("#6B7280")
+        val gridColor = if (isAmoled) Color.parseColor("#222222") else Color.parseColor("#E0E0E0")
+
         barChart.apply {
             description.isEnabled = false
             setDrawGridBackground(false)
@@ -249,14 +309,14 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
                 granularity = 1f
-                textColor = Color.parseColor("#6B7280")
+                textColor = labelColor
                 textSize = 10f
             }
             
             axisLeft.apply {
                 setDrawGridLines(true)
-                gridColor = Color.parseColor("#E0E0E0")
-                textColor = Color.parseColor("#6B7280")
+                this.gridColor = gridColor
+                textColor = labelColor
                 textSize = 10f
                 axisMinimum = 0f
                 setDrawAxisLine(false)
@@ -285,9 +345,14 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             }
         }
         
+        val prefs = requireContext().getSharedPreferences(com.zenzone.app.utils.Constants.PREFS_NAME, Context.MODE_PRIVATE)
+        val isAmoled = prefs.getBoolean("pref_amoled_theme", false)
+        val barColor = if (isAmoled) Color.parseColor("#4DB6AC") else Color.parseColor("#2A9D8F")
+        val valueColor = if (isAmoled) Color.WHITE else Color.parseColor("#264653")
+
         val dataSet = BarDataSet(entries, "Minutes").apply {
-            color = Color.parseColor("#2A9D8F")
-            valueTextColor = Color.parseColor("#264653")
+            color = barColor
+            valueTextColor = valueColor
             valueTextSize = 10f
             setDrawValues(true)
         }
@@ -301,6 +366,145 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
             xAxis.valueFormatter = IndexAxisValueFormatter(dayLabels)
             xAxis.labelCount = dayLabels.size
             invalidate()
+        }
+    }
+
+    private fun updatePeakHoursChart(sessions: List<com.zenzone.app.model.FocusSession>) {
+        val peakHoursChart = view?.findViewById<BarChart>(R.id.bar_chart_peak_hours) ?: return
+        
+        // Group sessions by hour of day
+        val hourCounts = IntArray(24) { 0 }
+        for (session in sessions) {
+            val hour = com.zenzone.app.utils.DateUtils.getHourFromTimestamp(session.completedAt)
+            if (hour in 0..23) {
+                hourCounts[hour]++
+            }
+        }
+        
+        val entries = mutableListOf<BarEntry>()
+        for (hour in 0..23) {
+            entries.add(BarEntry(hour.toFloat(), hourCounts[hour].toFloat()))
+        }
+        
+        // Apply theme color
+        val prefs = requireContext().getSharedPreferences(com.zenzone.app.utils.Constants.PREFS_NAME, Context.MODE_PRIVATE)
+        val isAmoled = prefs.getBoolean("pref_amoled_theme", false)
+        val barColor = if (isAmoled) Color.parseColor("#4DB6AC") else Color.parseColor("#2A9D8F")
+        val textColor = if (isAmoled) Color.WHITE else Color.parseColor("#264653")
+        val labelColor = if (isAmoled) Color.parseColor("#A0A0A0") else Color.parseColor("#6B7280")
+        
+        val dataSet = BarDataSet(entries, "Sessions").apply {
+            color = barColor
+            valueTextColor = textColor
+            valueTextSize = 8f
+            setDrawValues(false)
+        }
+        
+        val barData = BarData(dataSet).apply {
+            barWidth = 0.6f
+        }
+        
+        peakHoursChart.apply {
+            description.isEnabled = false
+            setDrawGridBackground(false)
+            setDrawBarShadow(false)
+            setDrawValueAboveBar(true)
+            setPinchZoom(false)
+            setScaleEnabled(false)
+            setDrawBorders(false)
+            legend.isEnabled = false
+            
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                granularity = 1f
+                this.textColor = labelColor
+                textSize = 9f
+                valueFormatter = IndexAxisValueFormatter(List(24) { "${it}h" })
+                labelCount = 12
+            }
+            
+            axisLeft.apply {
+                setDrawGridLines(true)
+                gridColor = if (isAmoled) Color.parseColor("#222222") else Color.parseColor("#E0E0E0")
+                this.textColor = labelColor
+                textSize = 9f
+                axisMinimum = 0f
+                setDrawAxisLine(false)
+            }
+            
+            axisRight.isEnabled = false
+            data = barData
+            invalidate()
+        }
+    }
+
+    private fun updateForecasting(sessions: List<com.zenzone.app.model.FocusSession>) {
+        val tvForecast = view?.findViewById<TextView>(R.id.tv_goals_forecast) ?: return
+        
+        if (sessions.isEmpty()) {
+            tvForecast.text = "Start focusing to see your goals projection. Complete sessions to build your daily XP pace!"
+            return
+        }
+
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        // Start of this week (Monday)
+        val calMonday = Calendar.getInstance()
+        val dayOfWeek = calMonday.get(Calendar.DAY_OF_WEEK)
+        val daysToSubtract = if (dayOfWeek == Calendar.SUNDAY) 6 else dayOfWeek - Calendar.MONDAY
+        calMonday.add(Calendar.DAY_OF_YEAR, -daysToSubtract)
+        calMonday.set(Calendar.HOUR_OF_DAY, 0)
+        calMonday.set(Calendar.MINUTE, 0)
+        calMonday.set(Calendar.SECOND, 0)
+        calMonday.set(Calendar.MILLISECOND, 0)
+        
+        val mondayDate = calMonday.time
+
+        // 14 days ago for historical pace
+        val cal14DaysAgo = Calendar.getInstance()
+        cal14DaysAgo.add(Calendar.DAY_OF_YEAR, -14)
+        val date14DaysAgo = cal14DaysAgo.time
+
+        var currentWeekXP = 0
+        var historicalXP = 0
+        val sessionDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+
+        for (session in sessions) {
+            val sessionDate = try {
+                sessionDateFormat.parse(session.completedAt) ?: Date()
+            } catch (e: Exception) {
+                Date()
+            }
+
+            val xp = session.durationMinutes * 2 + (if (session.wasChainSaved) 10 else 0)
+
+            if (!sessionDate.before(mondayDate)) {
+                currentWeekXP += xp
+            }
+            if (!sessionDate.before(date14DaysAgo)) {
+                historicalXP += xp
+            }
+        }
+
+        val dailyPace = historicalXP / 14.0
+        val todayNormalDayOfWeek = if (dayOfWeek == Calendar.SUNDAY) 7 else dayOfWeek - 1
+        val daysRemaining = 7 - todayNormalDayOfWeek
+        
+        val projectedXP = currentWeekXP + (dailyPace * daysRemaining)
+        val targetXP = 300 // A reasonable weekly XP target for users
+
+        if (dailyPace == 0.0) {
+            tvForecast.text = "Start focusing to see your goals projection. Complete sessions to build your daily XP pace!"
+        } else {
+            val paceStr = String.format("%.1f", dailyPace)
+            val projectedStr = projectedXP.toInt().toString()
+            if (projectedXP >= targetXP) {
+                tvForecast.text = "Based on your pace of $paceStr XP/day, you're projected to hit $projectedStr XP this week (Target: $targetXP XP). You are on track! 🎉"
+            } else {
+                tvForecast.text = "Based on your pace of $paceStr XP/day, you're projected to hit $projectedStr XP this week (Target: $targetXP XP). Try adding a short focus session today to stay on track! 🚀"
+            }
         }
     }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "801098825453",
+    "project_id": "zenzone-a2e17",
+    "storage_bucket": "zenzone-a2e17.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801098825453:android:78dd073810bd2aaecdd6e4",
+        "android_client_info": {
+          "package_name": "com.zenzone.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu3sSfo-6J4OPRjAjaIhu0hzdBncMLgOE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

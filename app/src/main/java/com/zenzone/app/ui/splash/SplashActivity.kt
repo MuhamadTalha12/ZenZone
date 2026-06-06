@@ -13,6 +13,7 @@ import com.zenzone.app.R
 import com.zenzone.app.ui.main.MainActivity
 
 class SplashActivity : AppCompatActivity() {
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)

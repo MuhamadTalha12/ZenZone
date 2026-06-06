@@ -49,8 +49,8 @@ class AddFocusFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Hide bottom navigation
-        (activity as? com.zenzone.app.ui.main.MainActivity)?.findViewById<View>(R.id.bottom_nav)?.visibility = View.GONE
+        // Lock navigation drawer
+        (activity as? com.zenzone.app.ui.main.MainActivity)?.setDrawerLocked(true)
 
         // Initialize ViewModel
         val focusRepo = FocusRepository(requireContext())
@@ -63,8 +63,8 @@ class AddFocusFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Show bottom navigation again
-        (activity as? com.zenzone.app.ui.main.MainActivity)?.findViewById<View>(R.id.bottom_nav)?.visibility = View.VISIBLE
+        // Unlock navigation drawer
+        (activity as? com.zenzone.app.ui.main.MainActivity)?.setDrawerLocked(false)
     }
 
     private fun setupViews(view: View) {

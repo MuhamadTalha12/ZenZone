@@ -5,13 +5,13 @@ import com.zenzone.app.model.FocusGoal
 object ChainCalculator {
 
     fun shouldIncrementChain(goal: FocusGoal, todayDate: String): Boolean {
-        if (goal.lastCompletedDate == null) return true
+        if (goal.lastCompletedDate.isNullOrBlank()) return true
         val days = DateUtils.daysBetween(goal.lastCompletedDate, todayDate)
         return days == 1
     }
 
     fun isChainBroken(goal: FocusGoal, todayDate: String): Boolean {
-        if (goal.lastCompletedDate == null) return false
+        if (goal.lastCompletedDate.isNullOrBlank()) return false
         val days = DateUtils.daysBetween(goal.lastCompletedDate, todayDate)
         return days > 1
     }
@@ -20,7 +20,7 @@ object ChainCalculator {
         var newChain = goal.currentChain
         var newLongest = goal.longestChain
 
-        if (goal.lastCompletedDate == null) {
+        if (goal.lastCompletedDate.isNullOrBlank()) {
             newChain = 1
             newLongest = maxOf(newChain, newLongest)
         } else if (isChainBroken(goal, today)) {

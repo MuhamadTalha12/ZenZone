@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/zen_slate_surface">
+
+    <!-- Lottie Fireworks/Confetti -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_celebration"
+        android:layout_width="200dp"
+        android:layout_height="140dp"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true" />
+
+    <!-- Custom Blooming Lotus View -->
+    <com.zenzone.app.ui.focus.BloomingLotusView
+        android:id="@+id/lotus_bloom_view"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Zen Session Complete! 🎉"
+        android:textColor="@color/zen_slate_dark"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins_font_family"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tv_dialog_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="You stayed focused and guarded your zen. Ready to log your session and grow your garden?"
+        android:textColor="@color/zen_gray_text"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:fontFamily="@font/poppins_font_family" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_session_notes"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="What did you accomplish?"
+        app:hintTextColor="@color/zen_teal_primary"
+        app:boxStrokeColor="@color/zen_teal_primary"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1A000000">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_session_notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:textColor="@color/zen_slate_dark"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_font_family" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_dialog_log"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/zen_teal_primary"
+        android:text="Log Session &amp; Gain XP"
+        android:textColor="@color/zen_slate_surface"
+        android:textStyle="bold"
+        app:cornerRadius="27dp" />
+
+    <TextView
+        android:id="@+id/tv_dialog_discard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Discard session"
+        android:textColor="@color/zen_danger_red"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+</LinearLayout>

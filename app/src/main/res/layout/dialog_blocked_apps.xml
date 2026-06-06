@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/zen_slate_dark">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Custom Blocklist"
+        android:textColor="@color/zen_slate_surface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select apps to block and nudge away from during focus runs."
+        android:textColor="@color/zen_gray_text"
+        android:textSize="12sp"
+        android:fontFamily="@font/poppins_font_family"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Search Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:hint="Search Apps"
+        app:hintTextColor="@color/zen_teal_light"
+        app:boxStrokeColor="@color/zen_teal_light"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:boxBackgroundColor="#1AFFFFFF">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_search_apps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:inputType="text"
+            android:fontFamily="@font/poppins_font_family"
+            android:textSize="14sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Apps List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_apps_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textColor="@color/zen_gray_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:text="Save blocklist"
+            android:textColor="@color/zen_slate_surface"
+            android:backgroundTint="@color/zen_teal_primary"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+</LinearLayout>
