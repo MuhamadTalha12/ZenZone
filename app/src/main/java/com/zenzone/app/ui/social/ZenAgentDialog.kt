@@ -30,6 +30,9 @@ import com.zenzone.app.ui.challenge.DailyChallengeFragment
 import com.zenzone.app.ui.stats.StatsFragment
 import com.zenzone.app.ui.profile.ProfileFragment
 import com.zenzone.app.ui.garden.ZenGardenFragment
+import androidx.lifecycle.ViewModelProvider
+import com.zenzone.app.viewmodel.HomeViewModel
+import com.zenzone.app.viewmodel.HomeViewModelFactory
 
 class ZenAgentDialog : BottomSheetDialogFragment() {
 
@@ -122,6 +125,11 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
 
         lifecycleScope.launch {
             try {
+                val focusRepo = FocusRepository(requireContext())
+                val userRepo = UserRepository(requireContext())
+                val factory = HomeViewModelFactory(focusRepo, userRepo)
+                val homeViewModel = ViewModelProvider(requireActivity(), factory)[HomeViewModel::class.java]
+
                 // Regex pattern definitions
                 val addGoalWithTimeRegex = Regex("""(?:create|add|new|setup|make)\s+(?:goal\s+|focus\s+|a\s+goal\s+|a\s+focus\s+|new\s+goal\s+|a\s+new\s+goal\s+|focus\s+goal\s+|a\s+focus\s+goal\s+)?([a-zA-Z0-9\s\-]+?)\s+(?:for\s+)?(\d+)\s*(?:min|minutes|m)?""")
                 val addGoalOnlyRegex = Regex("""(?:create|add|new|setup|make)\s+(?:goal\s+|focus\s+|a\s+goal\s+|a\s+focus\s+|new\s+goal\s+|a\s+new\s+goal\s+|focus\s+goal\s+|a\s+focus\s+goal\s+)?([a-zA-Z0-9\s\-]+)""")
@@ -194,8 +202,7 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                         val newTimeStr = match.groupValues[3]
                         val minutes = newTimeStr.toInt()
 
-                        val focusRepo = FocusRepository(requireContext())
-                        val existing = focusRepo.loadGoals().toMutableList()
+                        val existing = focusRepo.loadGoals()
                         val goalToUpdate = existing.find { 
                             it.name.equals(name, ignoreCase = true) || 
                             it.name.contains(name, ignoreCase = true) ||
@@ -203,9 +210,8 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                         }
 
                         if (goalToUpdate != null) {
-                            val idx = existing.indexOf(goalToUpdate)
-                            existing[idx] = goalToUpdate.copy(targetMinutes = minutes)
-                            focusRepo.saveGoals(existing)
+                            val updated = goalToUpdate.copy(targetMinutes = minutes)
+                            homeViewModel.updateGoal(updated)
                             if (oldTimeStr.isNotEmpty()) {
                                 addMessage("🧘 I have updated the focus target for **${goalToUpdate.name}** from **$oldTimeStr minutes** to **$minutes minutes**! ⏱️", isUser = false)
                             } else {
@@ -220,9 +226,9 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                         val name = match.groupValues[1].trim().replaceFirstChar { it.uppercase() }
                         val minutes = match.groupValues[2].toInt()
 
-                        val focusRepo = FocusRepository(requireContext())
                         val existing = focusRepo.loadGoals()
-                        
+                        val isUpdate = existing.any { it.name.equals(name, ignoreCase = true) }
+
                         val newGoal = FocusGoal(
                             id = UUID.randomUUID().toString(),
                             name = name,
@@ -236,19 +242,23 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                             colorTag = "#2A9D8F",
                             isSynced = false
                         )
-                        val updatedList = existing.toMutableList().apply { add(newGoal) }
-                        focusRepo.saveGoals(updatedList)
+                        homeViewModel.addGoal(newGoal)
 
-                        addMessage("🧘 I have created a new focus goal: **$name** with a daily target of **$minutes minutes**! 🎯", isUser = false)
+                        val msg = if (isUpdate) {
+                            "🧘 I have updated the focus goal: **$name** with a new target of **$minutes minutes**! ⏱️"
+                        } else {
+                            "🧘 I have created a new focus goal: **$name** with a daily target of **$minutes minutes**! 🎯"
+                        }
+                        addMessage(msg, isUser = false)
                     }
                     addGoalOnlyRegex.find(cleaned) != null -> {
                         val match = addGoalOnlyRegex.find(cleaned)!!
                         val name = match.groupValues[1].trim().replaceFirstChar { it.uppercase() }
                         val minutes = 25 // Default fallback duration
 
-                        val focusRepo = FocusRepository(requireContext())
                         val existing = focusRepo.loadGoals()
-                        
+                        val isUpdate = existing.any { it.name.equals(name, ignoreCase = true) }
+
                         val newGoal = FocusGoal(
                             id = UUID.randomUUID().toString(),
                             name = name,
@@ -262,17 +272,20 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                             colorTag = "#2A9D8F",
                             isSynced = false
                         )
-                        val updatedList = existing.toMutableList().apply { add(newGoal) }
-                        focusRepo.saveGoals(updatedList)
+                        homeViewModel.addGoal(newGoal)
 
-                        addMessage("🧘 I have created a new focus goal: **$name** (defaulting to **$minutes minutes**)! 🎯", isUser = false)
+                        val msg = if (isUpdate) {
+                            "🧘 I have updated the focus goal: **$name** to a target of **$minutes minutes**! ⏱️"
+                        } else {
+                            "🧘 I have created a new focus goal: **$name** (defaulting to **$minutes minutes**)! 🎯"
+                        }
+                        addMessage(msg, isUser = false)
                     }
                     deleteGoalRegex.find(cleaned) != null -> {
                         val match = deleteGoalRegex.find(cleaned)!!
                         val name = match.groupValues[1].trim()
 
-                        val focusRepo = FocusRepository(requireContext())
-                        val existing = focusRepo.loadGoals().toMutableList()
+                        val existing = focusRepo.loadGoals()
                         val goalToDelete = existing.find { 
                             it.name.equals(name, ignoreCase = true) || 
                             it.name.contains(name, ignoreCase = true) ||
@@ -280,8 +293,7 @@ class ZenAgentDialog : BottomSheetDialogFragment() {
                         }
 
                         if (goalToDelete != null) {
-                            existing.remove(goalToDelete)
-                            focusRepo.saveGoals(existing)
+                            homeViewModel.deleteGoal(goalToDelete.id)
                             addMessage("🧘 I have removed the focus goal: **${goalToDelete.name}**! 🗑️", isUser = false)
                         } else {
                             addMessage("❌ I couldn't find a focus goal matching '$name' to delete.", isUser = false)

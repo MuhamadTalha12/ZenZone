@@ -42,7 +42,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 val allBadges = com.zenzone.app.utils.BadgeManager.getAllBadges(curProfile)
                 
                 // Calculate total streak from all goals
-                val sumStreak = goals.sumOf { it.currentChain }
+                val sumStreak = goals.map { it.currentChain }.maxOrNull() ?: 0
                 
                 // Update profile with current chain from goals
                 val updatedProfile = curProfile.copy(currentChain = sumStreak)

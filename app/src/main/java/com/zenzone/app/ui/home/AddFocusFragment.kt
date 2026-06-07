@@ -158,6 +158,9 @@ class AddFocusFragment : Fragment() {
             return
         }
 
+        val existing = viewModel.goals.value.orEmpty()
+        val isUpdate = existing.any { it.name.equals(name, ignoreCase = true) }
+
         val goal = FocusGoal(
             id = UUID.randomUUID().toString(),
             name = name,
@@ -172,7 +175,7 @@ class AddFocusFragment : Fragment() {
         )
 
         viewModel.addGoal(goal)
-        Toast.makeText(requireContext(), "Goal created!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), if (isUpdate) "Goal updated!" else "Goal created!", Toast.LENGTH_SHORT).show()
         parentFragmentManager.popBackStack()
     }
 }

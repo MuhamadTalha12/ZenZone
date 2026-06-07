@@ -12,7 +12,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zenzone.app.R
@@ -24,7 +24,7 @@ import com.zenzone.app.ui.main.MainActivity
 
 class ZenGardenFragment : Fragment(R.layout.fragment_zen_garden) {
 
-    private val viewModel: HomeViewModel by viewModels {
+    private val viewModel: HomeViewModel by activityViewModels {
         HomeViewModelFactory(
             FocusRepository(requireContext()),
             UserRepository(requireContext())
@@ -57,7 +57,7 @@ class ZenGardenFragment : Fragment(R.layout.fragment_zen_garden) {
             (activity as? MainActivity)?.openDrawer()
         }
         view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
-            com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
+            showAgentInstructionsDialog()
         }
 
         rvPlants.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -289,5 +289,21 @@ class ZenGardenFragment : Fragment(R.layout.fragment_zen_garden) {
         }
 
         override fun getItemCount(): Int = items.size
+    }
+
+    private fun showAgentInstructionsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_agent_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

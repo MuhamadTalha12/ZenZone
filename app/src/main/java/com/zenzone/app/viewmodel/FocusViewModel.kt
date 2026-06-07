@@ -238,7 +238,7 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
                 val newTotalMs = profile.totalFocusedMinutes + minutesFocused
                 val newTotalSess = profile.totalSessions + 1
                 val newLongestEver = maxOf(profile.longestEverChain, updatedGoal.currentChain)
-                val newProfileChain = allGoals.sumOf { it.currentChain }
+                val newProfileChain = allGoals.map { it.currentChain }.maxOrNull() ?: 0
 
                 // Count late night sessions
                 val allSessions = focusRepo.loadSessions()

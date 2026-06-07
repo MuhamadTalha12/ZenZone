@@ -79,7 +79,7 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                 (activity as? MainActivity)?.openDrawer()
             }
             ivCommonAgent?.setOnClickListener {
-                com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
+                showAgentInstructionsDialog()
             }
             val progressBar = view.findViewById<android.widget.ProgressBar>(R.id.progress_bar)
 
@@ -625,6 +625,22 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
             dialog.dismiss()
         }
         
+        dialog.show()
+    }
+
+    private fun showAgentInstructionsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_agent_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
         dialog.show()
     }
 }

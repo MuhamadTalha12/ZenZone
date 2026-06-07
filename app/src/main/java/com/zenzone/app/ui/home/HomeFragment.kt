@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -20,7 +20,7 @@ import com.zenzone.app.ui.main.MainActivity
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    private val viewModel: HomeViewModel by viewModels {
+    private val viewModel: HomeViewModel by activityViewModels {
         HomeViewModelFactory(
             FocusRepository(requireContext()),
             UserRepository(requireContext())
@@ -42,7 +42,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 (activity as? MainActivity)?.openDrawer()
             }
             view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
-                com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
+                showAgentInstructionsDialog()
             }
 
             val rv = view.findViewById<RecyclerView>(R.id.rv_zen_cards)
@@ -224,6 +224,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun showInstructionsDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_home_instructions, null)
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
+        dialog.setContentView(dialogView)
+
+        dialog.window?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.setBackgroundColor(
+            androidx.core.content.ContextCompat.getColor(requireContext(), R.color.zen_slate_dark)
+        )
+
+        dialogView.findViewById<View>(R.id.btn_close).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun showAgentInstructionsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_agent_instructions, null)
         val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(requireContext())
         dialog.setContentView(dialogView)
 
