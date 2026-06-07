@@ -170,6 +170,29 @@
         android:layout_marginBottom="12dp"
         app:cornerRadius="12dp" />
 
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#2C3A50"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Logout Option -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_settings_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="LOGOUT"
+        android:textColor="@color/white"
+        android:backgroundTint="#E67E22"
+        android:fontFamily="@font/poppins_font_family"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"
+        app:cornerRadius="12dp"
+        app:icon="@android:drawable/ic_lock_lock"
+        app:iconGravity="textStart"
+        app:iconTint="@color/white" />
+
     <!-- Delete Account Option -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_settings_delete_account"

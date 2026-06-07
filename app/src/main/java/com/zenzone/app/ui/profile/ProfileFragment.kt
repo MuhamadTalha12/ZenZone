@@ -266,6 +266,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val btnChangePassword = dialogView.findViewById<MaterialButton>(R.id.btn_settings_change_password)
         val btnCustomBlocklist = dialogView.findViewById<MaterialButton>(R.id.btn_settings_custom_blocklist)
         val btnDeleteAccount = dialogView.findViewById<MaterialButton>(R.id.btn_settings_delete_account)
+        val btnLogout = dialogView.findViewById<MaterialButton>(R.id.btn_settings_logout)
 
         btnCustomBlocklist.setOnClickListener {
             com.zenzone.app.ui.settings.BlockedAppsDialogFragment().show(
@@ -360,6 +361,59 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
             showChangePasswordDialog()
             dialog.dismiss()
+        }
+
+        // Logout
+        btnLogout.setOnClickListener {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user == null) {
+                Toast.makeText(requireContext(), "You are not signed in.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Logout")
+                .setMessage("Your data will be synced to the cloud before logging out. Continue?")
+                .setPositiveButton("LOGOUT") { _, _ ->
+                    btnLogout.isEnabled = false
+                    btnLogout.text = "Syncing & Logging out..."
+                    
+                    lifecycleScope.launch {
+                        try {
+                            // Sync all local data to Firestore before signing out (max 10s)
+                            kotlinx.coroutines.withTimeoutOrNull(10_000L) {
+                                FirebaseSyncManager.syncLocalToFirestore(requireContext())
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        // Sign out from Firebase Auth
+                        FirebaseAuth.getInstance().signOut()
+
+                        // Clear onboarding status so the user sees registration screen
+                        val prefs = requireContext().getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
+                        prefs.edit().putBoolean(Constants.PREF_ONBOARDING_COMPLETE, false).apply()
+
+                        // Clear local data
+                        try {
+                            FirebaseSyncManager.clearAllLocalData(requireContext())
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
+                        Toast.makeText(requireContext(), "Logged out successfully!", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+
+                        // Restart MainActivity to show registration/onboarding screen
+                        val intent = Intent(requireContext(), MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        }
+                        startActivity(intent)
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         // Delete Account
@@ -513,13 +567,26 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     .addOnSuccessListener {
                         lifecycleScope.launch {
                             FirebaseSyncManager.clearAllLocalData(requireContext())
-                            val success = FirebaseSyncManager.syncFirestoreToLocal(requireContext())
+                            val success = kotlinx.coroutines.withTimeoutOrNull(15_000L) {
+                                try {
+                                    FirebaseSyncManager.syncFirestoreToLocal(requireContext())
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    false
+                                }
+                            } ?: false
+
                             if (success) {
                                 Toast.makeText(requireContext(), "Signed in successfully!", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
                                 onSuccess()
                             } else {
-                                Toast.makeText(requireContext(), "Failed to sync profile from cloud. Please try again.", Toast.LENGTH_LONG).show()
+                                try {
+                                    auth.signOut()
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                                Toast.makeText(requireContext(), "Failed to sync profile from cloud. Please check connection and try again.", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
