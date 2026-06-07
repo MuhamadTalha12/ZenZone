@@ -113,6 +113,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                     tvCurrentStreak.text = it.currentChain.toString()
                     
                     val totalHours = it.totalFocusedMinutes / 60.0
+                    tvWeeklyHours.text = String.format("%.1f", totalHours)
                     
                     // Milestone thresholds in hours
                     val milestones = listOf(0, 5, 15, 40, 100, 250, 500)
@@ -210,7 +211,6 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
                     }
                     
                     val weeklyHours = weeklyTotal / 60.0
-                    tvWeeklyHours.text = String.format("%.1f", weeklyHours)
                     
                     val targetHours = 15.0
                     val percentage = ((weeklyHours / targetHours) * 100).coerceAtMost(100.0).toInt()

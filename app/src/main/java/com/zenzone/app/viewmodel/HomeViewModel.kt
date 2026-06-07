@@ -74,9 +74,24 @@ class HomeViewModel(
                 }
 
                 val newProfileChain = updatedGoals.sumOf { it.currentChain }
+                val allSessions = repository.loadSessions()
+                val actualTotalMinutes = allSessions.sumOf { it.durationMinutes.toLong() }
+                
                 val profile = userRepository.loadProfile()
+                var profileUpdated = false
+                var updatedProfile = profile
+                
                 if (profile.currentChain != newProfileChain) {
-                    val updatedProfile = profile.copy(currentChain = newProfileChain)
+                    updatedProfile = updatedProfile.copy(currentChain = newProfileChain)
+                    profileUpdated = true
+                }
+                
+                if (profile.totalFocusedMinutes != actualTotalMinutes) {
+                    updatedProfile = updatedProfile.copy(totalFocusedMinutes = actualTotalMinutes)
+                    profileUpdated = true
+                }
+                
+                if (profileUpdated) {
                     userRepository.saveProfile(updatedProfile)
                 }
 
@@ -230,6 +245,7 @@ class HomeViewModel(
                 val currentList = _goals.value.orEmpty().toMutableList()
                 currentList.removeAll { it.id == goalId }
                 repository.saveGoals(currentList)
+                repository.deleteGoalFromFirestore(goalId)
 
                 val newProfileChain = currentList.sumOf { it.currentChain }
                 val profile = userRepository.loadProfile()

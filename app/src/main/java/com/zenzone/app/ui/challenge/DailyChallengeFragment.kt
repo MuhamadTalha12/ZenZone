@@ -154,6 +154,9 @@ class DailyChallengeFragment : Fragment() {
         view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
             com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
         }
+        view.findViewById<View>(R.id.cv_common_profile_mini)?.setOnClickListener {
+            (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_profile)
+        }
 
         view.findViewById<View>(R.id.iv_common_info)?.setOnClickListener {
             // Can show a bottom sheet or simple toast explaining challenges

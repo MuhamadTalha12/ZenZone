@@ -1,9 +1,9 @@
 package com.zenzone.app.utils
 
 import android.content.Context
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.zenzone.app.repository.AppDatabase
+import java.util.concurrent.TimeUnit
 
 class SyncWorker(
     appContext: Context,
@@ -15,6 +15,9 @@ class SyncWorker(
         if (!FirebaseSyncManager.isUserSignedIn()) {
             return Result.success()
         }
+
+        // Schedule next sync in 1 minute to keep it periodic
+        enqueuePeriodicSync(context)
 
         val db = AppDatabase.getDatabase(context)
         val goalDao = db.focusGoalDao()
@@ -41,6 +44,9 @@ class SyncWorker(
                 FirebaseSyncManager.saveProfileToFirestore(localProfile)
             }
 
+            // 4. Sync Firestore back to local (two-way sync pull)
+            FirebaseSyncManager.syncFirestoreToLocal(context)
+
             return Result.success()
         } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
@@ -49,4 +55,24 @@ class SyncWorker(
             return Result.retry()
         }
     }
+
+    companion object {
+        fun enqueuePeriodicSync(context: Context) {
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+                
+            val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+                .setConstraints(constraints)
+                .setInitialDelay(1, TimeUnit.MINUTES)
+                .build()
+                
+            WorkManager.getInstance(context).enqueueUniqueWork(
+                "zenzone_periodic_sync",
+                ExistingWorkPolicy.REPLACE,
+                syncRequest
+            )
+        }
+    }
 }
+

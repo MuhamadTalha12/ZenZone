@@ -23,7 +23,14 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 
 sealed class FocusEvent {
-    data class SessionComplete(val minutesFocused: Int, val oldChain: Int, val newChain: Int, val xpGained: Int, val newlyUnlockedBadges: List<ZenBadge>) : FocusEvent()
+    data class SessionComplete(
+        val minutesFocused: Int,
+        val oldChain: Int,
+        val newChain: Int,
+        val xpGained: Int,
+        val newlyUnlockedBadges: List<ZenBadge>,
+        val completedChallenges: List<String> = emptyList()
+    ) : FocusEvent()
     data class Error(val message: String) : FocusEvent()
 }
 
@@ -52,6 +59,7 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     val remainingTimeMs: LiveData<Long> = _remainingTimeMs
+    val totalDurationMs: LiveData<Long> = FocusTimerService.totalDurationMs
 
     val isRunning: LiveData<Boolean> = FocusTimerService.isRunning
     val isPaused: LiveData<Boolean> = FocusTimerService.isPaused
@@ -203,13 +211,22 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
 
                 // Update challenge progress
                 val challengeRepo = com.zenzone.app.repository.ChallengeRepository(getApplication())
-                challengeRepo.updateChallengeProgress("FOCUS_DURATION", minutesFocused)
-                challengeRepo.updateChallengeProgress("SESSION_COUNT", 1)
+                val completedChallengesList = mutableListOf<String>()
+                challengeRepo.updateChallengeProgress("FOCUS_DURATION", minutesFocused)?.let {
+                    completedChallengesList.add(it.title)
+                }
+                challengeRepo.updateChallengeProgress("SESSION_COUNT", 1)?.let {
+                    completedChallengesList.add(it.title)
+                }
                 if (updatedGoal.currentChain > 0) {
-                    challengeRepo.updateChallengeProgress("STREAK_MAINTAIN", 1)
+                    challengeRepo.updateChallengeProgress("STREAK_MAINTAIN", 1)?.let {
+                        completedChallengesList.add(it.title)
+                    }
                 }
                 if (minutesFocused >= goal.targetMinutes) {
-                    challengeRepo.updateChallengeProgress("GOAL_COMPLETE", 1)
+                    challengeRepo.updateChallengeProgress("GOAL_COMPLETE", 1)?.let {
+                        completedChallengesList.add(it.title)
+                    }
                 }
 
                 // Update profile
@@ -255,7 +272,14 @@ class FocusViewModel(application: Application) : AndroidViewModel(application) {
                     _userProfile.value = updatedProfile
                     _goals.value = allGoals
                     _selectedGoal.value = updatedGoal
-                    _focusEvents.value = FocusEvent.SessionComplete(minutesFocused, oldChain, updatedGoal.currentChain, xpGain, newBadgesThisSession)
+                    _focusEvents.value = FocusEvent.SessionComplete(
+                        minutesFocused,
+                        oldChain,
+                        updatedGoal.currentChain,
+                        xpGain,
+                        newBadgesThisSession,
+                        completedChallengesList
+                    )
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {

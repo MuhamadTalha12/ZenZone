@@ -7,6 +7,7 @@ import com.google.firebase.firestore.SetOptions
 import com.zenzone.app.model.FocusGoal
 import com.zenzone.app.model.FocusSession
 import com.zenzone.app.model.UserProfile
+import com.zenzone.app.model.ChallengeEntity
 import com.zenzone.app.repository.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -68,6 +69,14 @@ object FirebaseSyncManager {
             for (session in localSessions) {
                 sessionsCollection.document(session.id).set(session, SetOptions.merge()).await()
             }
+
+            // 4. Sync Challenges
+            val db = AppDatabase.getDatabase(context)
+            val localChallenges = db.challengeDao().getAllChallenges()
+            val challengesCollection = firestore.collection("users").document(uid).collection("challenges")
+            for (challenge in localChallenges) {
+                challengesCollection.document(challenge.id).set(challenge, SetOptions.merge()).await()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -122,6 +131,25 @@ object FirebaseSyncManager {
                 db.focusSessionDao().deleteAllSessions()
                 db.focusSessionDao().insertSessions(localSessions)
             }
+
+            // Recalculate profile's totalFocusedMinutes from all sessions
+            val allSessions = db.focusSessionDao().getAllSessions()
+            val computedTotalMinutes = allSessions.sumOf { it.durationMinutes.toLong() }
+            val profile = JsonStorageHelper.loadProfile(context)
+            if (profile.totalFocusedMinutes != computedTotalMinutes) {
+                val updatedProfile = profile.copy(totalFocusedMinutes = computedTotalMinutes)
+                JsonStorageHelper.saveProfile(context, updatedProfile)
+                saveProfileToFirestore(updatedProfile)
+            }
+
+            // 4. Sync Challenges
+            val challengesSnapshot = firestore.collection("users").document(uid).collection("challenges").get().await()
+            val remoteChallenges = challengesSnapshot.documents.mapNotNull { it.toObject(ChallengeEntity::class.java) }
+            if (remoteChallenges.isNotEmpty()) {
+                db.challengeDao().deleteAllChallenges()
+                db.challengeDao().insertChallenges(remoteChallenges)
+            }
+
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -159,6 +187,18 @@ object FirebaseSyncManager {
             firestore.collection("users").document(uid).collection("sessions")
                 .document(session.id)
                 .set(session, SetOptions.merge())
+                .await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun deleteGoalFromFirestore(goalId: String) {
+        val uid = getCurrentUserUid() ?: return
+        try {
+            firestore.collection("users").document(uid).collection("goals")
+                .document(goalId)
+                .delete()
                 .await()
         } catch (e: Exception) {
             e.printStackTrace()

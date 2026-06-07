@@ -81,6 +81,7 @@ class FocusTimerService : Service() {
         appCheckJob?.cancel()
         
         initialDurationMs = durationMs
+        _totalDurationMs.postValue(durationMs)
         _currentGoal.postValue(goal)
         _remainingTimeMs.postValue(durationMs)
         _isRunning.postValue(true)
@@ -150,6 +151,7 @@ class FocusTimerService : Service() {
         _isPaused.postValue(false)
         _currentGoal.postValue(null)
         _remainingTimeMs.postValue(0L)
+        _totalDurationMs.postValue(0L)
         _isDndActive.postValue(false)
         _currentSoundscape.postValue(SoundscapePlayer.SOUNDSCAPE_NONE)
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -172,6 +174,7 @@ class FocusTimerService : Service() {
         _isPaused.postValue(false)
         _currentGoal.postValue(null)
         _remainingTimeMs.postValue(0L)
+        _totalDurationMs.postValue(0L)
         _isDndActive.postValue(false)
         _currentSoundscape.postValue(SoundscapePlayer.SOUNDSCAPE_NONE)
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -318,11 +321,8 @@ class FocusTimerService : Service() {
         try {
             val db = com.zenzone.app.repository.AppDatabase.getDatabase(applicationContext)
             val isCustomBlocked = db.blockedAppDao().isAppBlocked(packageName)
-            if (isCustomBlocked) return true
-            
-            val customApp = db.blockedAppDao().getAllBlockedApps().firstOrNull { it.packageName == packageName }
-            if (customApp != null) {
-                return customApp.isBlocked
+            if (isCustomBlocked != null) {
+                return isCustomBlocked
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -334,6 +334,33 @@ class FocusTimerService : Service() {
         val now = System.currentTimeMillis()
         if (now - lastNudgeTime < 10000L) return
         lastNudgeTime = now
+
+        try {
+            // Force pull ZenZone back to the foreground
+            val launchIntent = Intent(this, MainActivity::class.java).apply {
+                action = Intent.ACTION_MAIN
+                addCategory(Intent.CATEGORY_LAUNCHER)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                putExtra("NAVIGATE_TO", "focus")
+            }
+            startActivity(launchIntent)
+
+            // Play notification/alarm sound
+            val notificationUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
+            val ringtone = android.media.RingtoneManager.getRingtone(applicationContext, notificationUri)
+            ringtone?.play()
+
+            // Notify user with a Toast
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                android.widget.Toast.makeText(
+                    applicationContext,
+                    "ZenZone Focus Mode: Blocked app detected! Return to your session.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         val mainIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -378,6 +405,9 @@ class FocusTimerService : Service() {
 
         private val _remainingTimeMs = MutableLiveData<Long>(0L)
         val remainingTimeMs: LiveData<Long> = _remainingTimeMs
+
+        private val _totalDurationMs = MutableLiveData<Long>(0L)
+        val totalDurationMs: LiveData<Long> = _totalDurationMs
 
         private val _isRunning = MutableLiveData<Boolean>(false)
         val isRunning: LiveData<Boolean> = _isRunning

@@ -254,6 +254,7 @@ class MainActivity : AppCompatActivity() {
                                     prefs.edit().putBoolean(Constants.PREF_ONBOARDING_COMPLETE, true).apply()
                                     layoutOnboarding.visibility = View.GONE
                                     setupNavigation()
+                                    com.zenzone.app.utils.SyncWorker.enqueuePeriodicSync(this@MainActivity)
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -292,6 +293,7 @@ class MainActivity : AppCompatActivity() {
 
                                     layoutOnboarding.visibility = View.GONE
                                     setupNavigation()
+                                    com.zenzone.app.utils.SyncWorker.enqueuePeriodicSync(this@MainActivity)
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -360,7 +362,8 @@ class MainActivity : AppCompatActivity() {
             setupNavigationListeners()
             
             val navigateTo = intent?.getStringExtra("NAVIGATE_TO")
-            val selectedId = if (navigateTo == "focus") R.id.nav_focus else R.id.nav_home
+            val isTimerRunning = com.zenzone.app.utils.FocusTimerService.isRunning.value == true
+            val selectedId = if (navigateTo == "focus" || isTimerRunning) R.id.nav_focus else R.id.nav_home
             navView.setCheckedItem(selectedId)
             
             val initialFragment: Fragment = when (selectedId) {
@@ -417,7 +420,8 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         val navigateTo = intent?.getStringExtra("NAVIGATE_TO")
-        if (navigateTo == "focus") {
+        val isTimerRunning = com.zenzone.app.utils.FocusTimerService.isRunning.value == true
+        if (navigateTo == "focus" || isTimerRunning) {
             navView.setCheckedItem(R.id.nav_focus)
             supportFragmentManager.beginTransaction()
                 .replace(R.id.nav_host_fragment, FocusFragment())
@@ -454,6 +458,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.fab_zen_agent)?.visibility = View.VISIBLE
     }
     
+    override fun onResume() {
+        super.onResume()
+        if (com.zenzone.app.utils.FocusTimerService.isRunning.value == true) {
+            val currentChecked = navView.checkedItem?.itemId
+            if (currentChecked != R.id.nav_focus) {
+                navigateToMenuItem(R.id.nav_focus)
+            }
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onBackPressed() {

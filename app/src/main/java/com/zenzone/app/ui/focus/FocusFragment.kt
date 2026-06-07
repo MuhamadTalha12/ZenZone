@@ -32,8 +32,13 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
 
     private val viewModel: FocusViewModel by viewModels()
     private var hasGoals = false
-    private var selectedMode = com.zenzone.app.model.FocusMode.POMODORO
+    private var selectedMode: com.zenzone.app.model.FocusMode? = null
     private var customMinutes = 25
+
+    private var cvCommonProfile: View? = null
+    private var ivCommonInfo: View? = null
+    private var ivCommonMenu: View? = null
+    private var ivCommonAgent: View? = null
 
     private val requestNotificationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -64,14 +69,16 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
             val tvGoalSubtitle: TextView = view.findViewById(R.id.tv_goal_subtitle)
             val cvGoalSelector: MaterialCardView = view.findViewById(R.id.cv_goal_selector)
             val cvActiveBadge: MaterialCardView = view.findViewById(R.id.cv_active_badge)
-            val ivCommonInfo: ImageView = view.findViewById(R.id.iv_common_info)
-            val cvCommonProfile: View = view.findViewById(R.id.cv_common_profile_mini)
+            ivCommonInfo = view.findViewById(R.id.iv_common_info)
+            cvCommonProfile = view.findViewById(R.id.cv_common_profile_mini)
+            ivCommonMenu = view.findViewById(R.id.iv_common_menu)
+            ivCommonAgent = view.findViewById(R.id.iv_common_agent)
             val tvCommonInitial = view.findViewById<TextView>(R.id.tv_common_profile_initial_mini)
             val ivCommonProfileImage = view.findViewById<ImageView>(R.id.iv_common_profile_image_mini)
-            view.findViewById<View>(R.id.iv_common_menu)?.setOnClickListener {
+            ivCommonMenu?.setOnClickListener {
                 (activity as? MainActivity)?.openDrawer()
             }
-            view.findViewById<View>(R.id.iv_common_agent)?.setOnClickListener {
+            ivCommonAgent?.setOnClickListener {
                 com.zenzone.app.ui.social.ZenAgentDialog.show(requireContext(), parentFragmentManager, activity as? MainActivity)
             }
             val progressBar = view.findViewById<android.widget.ProgressBar>(R.id.progress_bar)
@@ -93,47 +100,60 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                     .commit()
             }
 
-            modePomodoro.setOnClickListener { selectFocusMode(com.zenzone.app.model.FocusMode.POMODORO, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView) }
-            modeDeepWork.setOnClickListener { selectFocusMode(com.zenzone.app.model.FocusMode.DEEP_WORK, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView) }
-            modeStudySprint.setOnClickListener { selectFocusMode(com.zenzone.app.model.FocusMode.STUDY_SPRINT, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView) }
+            modePomodoro.setOnClickListener {
+                val nextMode = if (selectedMode == com.zenzone.app.model.FocusMode.POMODORO) null else com.zenzone.app.model.FocusMode.POMODORO
+                selectFocusMode(nextMode, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+            }
+            modeDeepWork.setOnClickListener {
+                val nextMode = if (selectedMode == com.zenzone.app.model.FocusMode.DEEP_WORK) null else com.zenzone.app.model.FocusMode.DEEP_WORK
+                selectFocusMode(nextMode, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+            }
+            modeStudySprint.setOnClickListener {
+                val nextMode = if (selectedMode == com.zenzone.app.model.FocusMode.STUDY_SPRINT) null else com.zenzone.app.model.FocusMode.STUDY_SPRINT
+                selectFocusMode(nextMode, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+            }
             modeCustom.setOnClickListener {
-                val input = android.widget.EditText(requireContext()).apply {
-                    inputType = android.text.InputType.TYPE_CLASS_NUMBER
-                    setText(customMinutes.toString())
-                    setSelection(text.length)
-                }
-                val padding = (24 * resources.displayMetrics.density).toInt()
-                val container = android.widget.FrameLayout(requireContext()).apply {
-                    addView(input, android.widget.FrameLayout.LayoutParams(
-                        android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
-                        android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        leftMargin = padding
-                        rightMargin = padding
-                        topMargin = padding / 2
-                        bottomMargin = padding / 2
-                    })
-                }
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Custom Focus Duration")
-                    .setMessage("Enter focus duration in minutes (1 - 180):")
-                    .setView(container)
-                    .setPositiveButton("Set") { _, _ ->
-                        val entered = input.text.toString().toIntOrNull()
-                        if (entered != null && entered in 1..180) {
-                            customMinutes = entered
-                            view.findViewById<TextView>(R.id.tv_custom_mode_duration)?.text = "$customMinutes min"
-                            selectFocusMode(com.zenzone.app.model.FocusMode.CUSTOM, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
-                        } else {
-                            Toast.makeText(requireContext(), "Please enter a valid duration between 1 and 180 minutes.", Toast.LENGTH_SHORT).show()
-                        }
+                if (selectedMode == com.zenzone.app.model.FocusMode.CUSTOM) {
+                    selectFocusMode(null, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+                } else {
+                    val input = android.widget.EditText(requireContext()).apply {
+                        inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                        setText(customMinutes.toString())
+                        setSelection(text.length)
                     }
-                    .setNegativeButton("Cancel", null)
-                    .show()
+                    val padding = (24 * resources.displayMetrics.density).toInt()
+                    val container = android.widget.FrameLayout(requireContext()).apply {
+                        addView(input, android.widget.FrameLayout.LayoutParams(
+                            android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            leftMargin = padding
+                            rightMargin = padding
+                            topMargin = padding / 2
+                            bottomMargin = padding / 2
+                        })
+                    }
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Custom Focus Duration")
+                        .setMessage("Enter focus duration in minutes (1 - 180):")
+                        .setView(container)
+                        .setPositiveButton("Set") { _, _ ->
+                            val entered = input.text.toString().toIntOrNull()
+                            if (entered != null && entered in 1..180) {
+                                customMinutes = entered
+                                view.findViewById<TextView>(R.id.tv_custom_mode_duration)?.text = "$customMinutes min"
+                                selectFocusMode(com.zenzone.app.model.FocusMode.CUSTOM, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+                            } else {
+                                Toast.makeText(requireContext(), "Please enter a valid duration between 1 and 180 minutes.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
             }
 
-            selectFocusMode(com.zenzone.app.model.FocusMode.POMODORO, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
+            selectFocusMode(null, modePomodoro, modeDeepWork, modeStudySprint, modeCustom, timerView)
 
             viewModel.userProfile.observe(viewLifecycleOwner) { profile ->
                 profile?.let {
@@ -213,6 +233,7 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                     spinnerGoals.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                              viewModel.selectGoal(goals[position])
+                             updateTimerDisplay(timerView)
                         }
                         override fun onNothingSelected(parent: AdapterView<*>?) {}
                     }
@@ -259,25 +280,16 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                 goal?.let {
                     tvGoalName.text = it.name
                     tvGoalSubtitle.text = "Target: ${it.targetMinutes} min · Chain: ${it.currentChain} 🔥"
-                    val durationMins = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) {
-                        selectedMode.durationMinutes
-                    } else {
-                        customMinutes
-                    }
-                    val totalMs = durationMins * 60 * 1000L
-                    val remainMs = viewModel.remainingTimeMs.value ?: totalMs
-                    timerView.update(remainMs, totalMs)
+                    updateTimerDisplay(timerView)
                 }
             }
 
-            viewModel.remainingTimeMs.observe(viewLifecycleOwner) { remainMs ->
-                val durationMins = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) {
-                    selectedMode.durationMinutes
-                } else {
-                    customMinutes
-                }
-                val totalMs = durationMins * 60 * 1000L
-                timerView.update(remainMs, totalMs)
+            viewModel.remainingTimeMs.observe(viewLifecycleOwner) { _ ->
+                updateTimerDisplay(timerView)
+            }
+
+            viewModel.totalDurationMs.observe(viewLifecycleOwner) { _ ->
+                updateTimerDisplay(timerView)
             }
 
             viewModel.isRunning.observe(viewLifecycleOwner) { isRunning ->
@@ -298,6 +310,20 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                 } else {
                     mainActivity?.disableFocusLock()
                 }
+
+                // Disable non-essential views during active focus session
+                cvCommonProfile?.isEnabled = !isRunning
+                ivCommonInfo?.isEnabled = !isRunning
+                ivCommonMenu?.isEnabled = !isRunning
+                ivCommonAgent?.isEnabled = !isRunning
+
+                val alphaVal = if (isRunning) 0.4f else 1.0f
+                cvCommonProfile?.alpha = alphaVal
+                ivCommonInfo?.alpha = alphaVal
+                ivCommonMenu?.alpha = alphaVal
+                ivCommonAgent?.alpha = alphaVal
+
+                updateTimerDisplay(timerView)
             }
 
             viewModel.isPaused.observe(viewLifecycleOwner) { isPaused ->
@@ -360,6 +386,11 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                                 val badgeNames = it.newlyUnlockedBadges.joinToString(", ") { badge -> badge.name }
                                 Toast.makeText(requireContext(), "🏆 New Badge Unlocked: $badgeNames!", Toast.LENGTH_LONG).show()
                             }
+                            if (it.completedChallenges.isNotEmpty()) {
+                                it.completedChallenges.forEach { challengeTitle ->
+                                    Toast.makeText(requireContext(), "🏆 Challenge Completed: $challengeTitle!", Toast.LENGTH_LONG).show()
+                                }
+                            }
                             viewModel.clearEvent()
                         }
                         is FocusEvent.Error -> {
@@ -419,11 +450,11 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                     .show()
             }
 
-            ivCommonInfo.setOnClickListener {
+            ivCommonInfo?.setOnClickListener {
                 showXpInfoDialog()
             }
 
-            cvCommonProfile.setOnClickListener {
+            cvCommonProfile?.setOnClickListener {
                 (activity as? MainActivity)?.navigateToMenuItem(R.id.nav_profile)
             }
 
@@ -505,23 +536,27 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
                 }
                 .setNegativeButton("Skip") { _, _ -> 
                      viewModel.selectedGoal.value?.let { goal ->
-                          val duration = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) selectedMode.durationMinutes else customMinutes
-                          val sound = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) selectedMode.defaultSoundscape else selectedSoundscape
-                          viewModel.startTimer(goal, useDnd, sound, duration, selectedMode.distractionSensitivity)
+                          val mode = selectedMode
+                          val duration = if (mode == null) goal.targetMinutes else (if (mode != com.zenzone.app.model.FocusMode.CUSTOM) mode.durationMinutes else customMinutes)
+                          val sound = if (mode == null) "None" else (if (mode != com.zenzone.app.model.FocusMode.CUSTOM) mode.defaultSoundscape else selectedSoundscape)
+                          val sensitivity = if (mode == null) "GENTLE" else mode.distractionSensitivity
+                          viewModel.startTimer(goal, useDnd, sound, duration, sensitivity)
                      }
                 }
                 .show()
         } else {
             viewModel.selectedGoal.value?.let { goal ->
-                  val duration = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) selectedMode.durationMinutes else customMinutes
-                  val sound = if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) selectedMode.defaultSoundscape else selectedSoundscape
-                  viewModel.startTimer(goal, useDnd, sound, duration, selectedMode.distractionSensitivity)
+                  val mode = selectedMode
+                  val duration = if (mode == null) goal.targetMinutes else (if (mode != com.zenzone.app.model.FocusMode.CUSTOM) mode.durationMinutes else customMinutes)
+                  val sound = if (mode == null) "None" else (if (mode != com.zenzone.app.model.FocusMode.CUSTOM) mode.defaultSoundscape else selectedSoundscape)
+                  val sensitivity = if (mode == null) "GENTLE" else mode.distractionSensitivity
+                  viewModel.startTimer(goal, useDnd, sound, duration, sensitivity)
             }
         }
     }
 
     private fun selectFocusMode(
-        mode: com.zenzone.app.model.FocusMode,
+        mode: com.zenzone.app.model.FocusMode?,
         modePomodoro: MaterialCardView,
         modeDeepWork: MaterialCardView,
         modeStudySprint: MaterialCardView,
@@ -542,22 +577,37 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
             card.strokeWidth = 0
         }
 
-        val activeCard = when (mode) {
-            com.zenzone.app.model.FocusMode.POMODORO -> modePomodoro
-            com.zenzone.app.model.FocusMode.DEEP_WORK -> modeDeepWork
-            com.zenzone.app.model.FocusMode.STUDY_SPRINT -> modeStudySprint
-            com.zenzone.app.model.FocusMode.CUSTOM -> modeCustom
-        }
-        activeCard.setCardBackgroundColor(activeBg)
-        activeCard.strokeColor = activeStroke
-        activeCard.strokeWidth = 4
-
-        if (viewModel.isRunning.value != true) {
-            val totalMs = if (mode != com.zenzone.app.model.FocusMode.CUSTOM) {
-                mode.durationMinutes * 60 * 1000L
-            } else {
-                customMinutes * 60 * 1000L
+        if (mode != null) {
+            val activeCard = when (mode) {
+                com.zenzone.app.model.FocusMode.POMODORO -> modePomodoro
+                com.zenzone.app.model.FocusMode.DEEP_WORK -> modeDeepWork
+                com.zenzone.app.model.FocusMode.STUDY_SPRINT -> modeStudySprint
+                com.zenzone.app.model.FocusMode.CUSTOM -> modeCustom
             }
+            activeCard.setCardBackgroundColor(activeBg)
+            activeCard.strokeColor = activeStroke
+            activeCard.strokeWidth = 4
+        }
+
+        updateTimerDisplay(timerView)
+    }
+
+    private fun updateTimerDisplay(timerView: CircularTimerView) {
+        val isRunning = viewModel.isRunning.value == true
+        if (isRunning) {
+            val remainMs = viewModel.remainingTimeMs.value ?: 0L
+            val totalMs = viewModel.totalDurationMs.value ?: (25 * 60 * 1000L)
+            timerView.update(remainMs, totalMs)
+        } else {
+            val goal = viewModel.selectedGoal.value
+            val durationMins = if (selectedMode == null) {
+                goal?.targetMinutes ?: 25
+            } else if (selectedMode != com.zenzone.app.model.FocusMode.CUSTOM) {
+                selectedMode!!.durationMinutes
+            } else {
+                customMinutes
+            }
+            val totalMs = durationMins * 60 * 1000L
             timerView.update(totalMs, totalMs)
         }
     }

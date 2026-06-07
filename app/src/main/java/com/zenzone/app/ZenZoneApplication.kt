@@ -3,6 +3,8 @@ package com.zenzone.app
 import android.app.Application
 import androidx.work.*
 import com.zenzone.app.utils.ChallengeResetWorker
+import com.zenzone.app.utils.FirebaseSyncManager
+import com.zenzone.app.utils.SyncWorker
 import java.util.Calendar
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -12,6 +14,9 @@ class ZenZoneApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         scheduleChallengeResetWorker()
+        if (FirebaseSyncManager.isUserSignedIn()) {
+            SyncWorker.enqueuePeriodicSync(this)
+        }
     }
 
     private fun scheduleChallengeResetWorker() {

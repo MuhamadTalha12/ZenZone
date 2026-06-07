@@ -6,6 +6,7 @@ import com.zenzone.app.model.FocusGoal
 import com.zenzone.app.model.FocusSession
 import com.zenzone.app.utils.JsonStorageHelper
 import com.zenzone.app.utils.SyncWorker
+import com.zenzone.app.utils.FirebaseSyncManager
 
 class FocusRepository(private val context: Context) {
     private val db = AppDatabase.getDatabase(context)
@@ -65,5 +66,9 @@ class FocusRepository(private val context: Context) {
             ExistingWorkPolicy.REPLACE,
             syncRequest
         )
+    }
+
+    suspend fun deleteGoalFromFirestore(goalId: String) {
+        FirebaseSyncManager.deleteGoalFromFirestore(goalId)
     }
 }

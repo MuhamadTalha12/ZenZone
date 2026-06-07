@@ -10,7 +10,7 @@ import com.zenzone.app.model.BlockedAppEntity
 interface BlockedAppDao {
 
     @Query("SELECT isBlocked FROM blocked_apps WHERE packageName = :packageName LIMIT 1")
-    suspend fun isAppBlocked(packageName: String): Boolean
+    suspend fun isAppBlocked(packageName: String): Boolean?
 
     @Query("SELECT * FROM blocked_apps")
     suspend fun getAllBlockedApps(): List<BlockedAppEntity>

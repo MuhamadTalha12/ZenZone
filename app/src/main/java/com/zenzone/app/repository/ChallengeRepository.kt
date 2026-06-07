@@ -33,31 +33,44 @@ class ChallengeRepository(private val context: Context) {
         type: String,
         incrementValue: Int,
         onChallengeCompleted: ((ChallengeEntity) -> Unit)? = null
-    ) = withContext(Dispatchers.IO) {
+    ): ChallengeEntity? = withContext(Dispatchers.IO) {
         val today = DateUtils.getTodayString()
-        val challenges = challengeDao.getChallengesForDateSync(today)
+        var challenges = challengeDao.getChallengesForDateSync(today)
+        if (challenges.isEmpty()) {
+            val success = fetchAndCacheChallenges(today)
+            if (!success) {
+                generateAndUploadDefaultChallenges(today)
+            }
+            challenges = challengeDao.getChallengesForDateSync(today)
+        }
+        var completedChallenge: ChallengeEntity? = null
         for (challenge in challenges) {
             if (challenge.type == type && !challenge.isCompleted) {
                 val newProgress = challenge.currentProgress + incrementValue
                 val isNowCompleted = newProgress >= challenge.targetValue
 
-                if (isNowCompleted) {
+                val updatedChallenge = if (isNowCompleted) {
                     challengeDao.updateProgress(challenge.id, challenge.targetValue)
                     challengeDao.markComplete(challenge.id)
 
                     awardXPAndSeeds(challenge.xpReward, challenge.seedReward)
 
-                    onChallengeCompleted?.invoke(
-                        challenge.copy(
-                            currentProgress = challenge.targetValue,
-                            isCompleted = true
-                        )
+                    val completed = challenge.copy(
+                        currentProgress = challenge.targetValue,
+                        isCompleted = true
                     )
+                    onChallengeCompleted?.invoke(completed)
+                    completedChallenge = completed
+                    completed
                 } else {
                     challengeDao.updateProgress(challenge.id, newProgress)
+                    challenge.copy(currentProgress = newProgress)
                 }
+
+                saveChallengeToFirestore(updatedChallenge)
             }
         }
+        completedChallenge
     }
 
     private suspend fun awardXPAndSeeds(xpReward: Int, seedReward: Int) {
@@ -78,6 +91,12 @@ class ChallengeRepository(private val context: Context) {
     }
 
     suspend fun fetchAndCacheChallenges(date: String): Boolean = withContext(Dispatchers.IO) {
+        val userChallenges = fetchUserChallengesForDate(date)
+        if (userChallenges.isNotEmpty()) {
+            challengeDao.insertChallenges(userChallenges)
+            return@withContext true
+        }
+
         try {
             val docRef = firestore.collection("daily_challenges").document(date)
             val snapshot = docRef.get().await()
@@ -112,6 +131,9 @@ class ChallengeRepository(private val context: Context) {
                 }
                 if (challengesList.isNotEmpty()) {
                     challengeDao.insertChallenges(challengesList)
+                    for (ch in challengesList) {
+                        saveChallengeToFirestore(ch)
+                    }
                     return@withContext true
                 }
             }
@@ -163,6 +185,9 @@ class ChallengeRepository(private val context: Context) {
         )
 
         challengeDao.insertChallenges(challengesList)
+        for (ch in challengesList) {
+            saveChallengeToFirestore(ch)
+        }
 
         try {
             val docData = mapOf(
@@ -196,6 +221,32 @@ class ChallengeRepository(private val context: Context) {
                 .await()
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    suspend fun saveChallengeToFirestore(challenge: ChallengeEntity) {
+        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
+        try {
+            firestore.collection("users").document(uid).collection("challenges")
+                .document(challenge.id)
+                .set(challenge, SetOptions.merge())
+                .await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun fetchUserChallengesForDate(date: String): List<ChallengeEntity> {
+        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return emptyList()
+        return try {
+            val snapshot = firestore.collection("users").document(uid).collection("challenges")
+                .whereEqualTo("date", date)
+                .get()
+                .await()
+            snapshot.documents.mapNotNull { it.toObject(ChallengeEntity::class.java) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
         }
     }
 }

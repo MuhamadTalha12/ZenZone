@@ -580,6 +580,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                 Toast.makeText(requireContext(), "Signed in successfully!", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
                                 onSuccess()
+                                com.zenzone.app.utils.SyncWorker.enqueuePeriodicSync(requireContext())
                             } else {
                                 try {
                                     auth.signOut()
@@ -591,7 +592,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(requireContext(), "Sign in failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), "Sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
             } else {
                 auth.createUserWithEmailAndPassword(email, password)
@@ -601,6 +602,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                             Toast.makeText(requireContext(), "Account created successfully!", Toast.LENGTH_SHORT).show()
                             dialog.dismiss()
                             onSuccess()
+                            com.zenzone.app.utils.SyncWorker.enqueuePeriodicSync(requireContext())
                         }
                     }
                     .addOnFailureListener { e ->
@@ -739,13 +741,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                     canvas.drawBitmap(originalBitmap, saveMatrix, android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG))
 
-                    val outputStream = java.io.ByteArrayOutputStream()
-                    croppedBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, outputStream)
-                    val bytes = outputStream.toByteArray()
-                    val base64 = android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT)
+                    val base64 = ImageUtils.bitmapToBase64(croppedBitmap)
 
                     val currentProfile = viewModel.profile.value
-                    if (currentProfile != null) {
+                    if (currentProfile != null && base64 != null) {
                         viewModel.updateProfile(currentProfile.userName, base64)
                         Toast.makeText(requireContext(), "Profile picture updated successfully!", Toast.LENGTH_SHORT).show()
                     }

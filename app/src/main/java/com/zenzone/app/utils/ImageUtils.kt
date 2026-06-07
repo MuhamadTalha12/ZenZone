@@ -53,6 +53,19 @@ object ImageUtils {
         }
     }
 
+    fun bitmapToBase64(bitmap: Bitmap): String? {
+        return try {
+            val outputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, outputStream)
+            val imageBytes = outputStream.toByteArray()
+            val base64String = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+            "$BASE64_PREFIX$base64String"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     fun base64ToBitmap(base64Str: String): Bitmap? {
         return try {
             val pureBase64 = if (base64Str.startsWith(BASE64_PREFIX)) {

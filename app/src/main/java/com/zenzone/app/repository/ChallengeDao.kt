@@ -30,4 +30,7 @@ interface ChallengeDao {
 
     @Query("DELETE FROM daily_challenges")
     suspend fun deleteAllChallenges()
+
+    @Query("SELECT * FROM daily_challenges")
+    suspend fun getAllChallenges(): List<ChallengeEntity>
 }
